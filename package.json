@@ -1,0 +1,27 @@
+{
+  "name": "housing-needs-evidence-store",
+  "version": "1.0.0",
+  "description": "🎒 Stores and retrieves documents and evidence",
+  "main": "index.js",
+  "dependencies": {
+    "@types/node": "^14.0.13",
+    "aws-lambda-fastify": "^1.4.3",
+    "fastify": "^2.14.1"
+  },
+  "devDependencies": {
+    "@nuel/uniformly": "^3.0.2",
+    "nodemon": "^2.0.4"
+  },
+  "scripts": {
+    "build": "uniformly build",
+    "predev": "npm run build",
+    "dev": "nodemon -e js,ts",
+    "test": "uniformly test",
+    "test:watch": "uniformly test -- --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LBHackney-IT/housing-needs-evidence-store.git"
+  },
+  "license": "UNLICENSED"
+}
