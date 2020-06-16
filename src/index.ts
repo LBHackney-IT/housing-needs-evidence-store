@@ -1,17 +1,12 @@
 import fastify from 'fastify';
+import { health } from './routes';
 
 const app = fastify();
 
-app.route({
-  method: 'GET',
-  url: '/health',
-  handler: (_req, reply) => {
-    reply.status(200).send();
-  }
-});
+app.route(health);
 
 if (require.main === module) {
-  app.listen(3000, (err, address) => {
+  app.listen(5050, (err, address) => {
     if (err) {
       console.error(err);
       process.exit(1);
