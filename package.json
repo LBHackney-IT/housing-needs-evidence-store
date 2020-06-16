@@ -13,7 +13,7 @@
     "nodemon": "^2.0.4"
   },
   "scripts": {
-    "build": "uniformly build",
+    "build": "rm -rf lib/ && uniformly build",
     "predev": "npm run build",
     "dev": "nodemon -e js,ts",
     "test": "uniformly test",
