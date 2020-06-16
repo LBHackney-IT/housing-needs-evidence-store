@@ -6,7 +6,7 @@ const app = fastify();
 app.route(health);
 
 if (require.main === module) {
-  app.listen(3000, (err, address) => {
+  app.listen(5050, (err, address) => {
     if (err) {
       console.error(err);
       process.exit(1);
