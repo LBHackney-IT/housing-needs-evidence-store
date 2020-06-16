@@ -1,0 +1,24 @@
+service: hn-evidence-store
+
+provider:
+  name: aws
+  region: eu-west-2
+  stage: ${opt:stage}
+  runtime: nodejs12.x
+  memorySize: 512
+  timeout: 10
+  tracing:
+    lambda: true
+
+functions:
+  hn-evidence-store-api:
+    name: ${self:service}-${self:provider.stage}-api
+    handler: lib/handler.handler
+    package:
+      include:
+        - package.json
+        - lib/**
+        - node_modules/**
+    events:
+      - http: ANY /
+      - http: ANY /{proxy+}
