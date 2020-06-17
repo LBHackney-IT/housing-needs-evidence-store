@@ -28,11 +28,9 @@ jobs:
           name: sls deploy
           command: npm run deploy -- -s << parameters.stage_name >>
 workflows:
-  build-and-test:
+  continuous-delivery:
     jobs:
       - build-and-test
-  build-and-deploy:
-    jobs:
       - deploy:
           name: Deploy to production
           stage_name: prod
@@ -47,3 +45,5 @@ workflows:
           filters:
             branches:
               ignore: master
+          requires:
+            - build-and-test
