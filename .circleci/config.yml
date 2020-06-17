@@ -11,6 +11,8 @@ jobs:
           steps:
             - run: npm install
             - run: npm test
+      - store_artifacts:
+          path: coverage
       - persist_to_workspace:
           root: ~/
           paths: .
