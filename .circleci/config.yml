@@ -11,7 +11,39 @@ jobs:
           steps:
             - run: npm install
             - run: npm test
+  deploy:
+    executor:
+      name: node/default
+    parameters:
+      stage_name:
+        type: string
+    steps:
+      - checkout
+
+      - node/with-cache:
+          steps:
+            - run: npm install
+
+      - run:
+          name: sls deploy
+          command: npm run deploy -- -s << parameters.stage_name >>
 workflows:
-    build-and-test:
-      jobs:
-        - build-and-test
+  continuous-delivery:
+    jobs:
+      - build-and-test
+      - deploy:
+          name: deploy-production
+          stage_name: prod
+          context: housing-needs-development-context
+          filters:
+            branches:
+              only: master
+      - deploy:
+          name: deploy-temporary-branch
+          stage_name: ${CIRCLE_BRANCH##*/}
+          context: housing-needs-development-context
+          filters:
+            branches:
+              ignore: master
+          requires:
+            - build-and-test
