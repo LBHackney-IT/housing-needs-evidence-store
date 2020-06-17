@@ -11,6 +11,9 @@ jobs:
           steps:
             - run: npm install
             - run: npm test
+      - persist_to_workspace:
+          root: ~/
+          paths: .
   deploy:
     executor:
       name: node/default
@@ -18,11 +21,8 @@ jobs:
       stage_name:
         type: string
     steps:
-      - checkout
-
-      - node/with-cache:
-          steps:
-            - run: npm install
+      - attach_workspace:
+          at: ~/
 
       - run:
           name: sls deploy
@@ -34,6 +34,8 @@ jobs:
       stage_name:
         type: string
     steps:
+      - attach_workspace:
+          at: ~/
       - run:
           name: integration-tests
           command: |
