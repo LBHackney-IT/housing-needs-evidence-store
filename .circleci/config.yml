@@ -27,6 +27,19 @@ jobs:
       - run:
           name: sls deploy
           command: npm run deploy -- -s << parameters.stage_name >>
+  integration-test:
+    executor:
+      name: node/default
+    parameters:
+      stage_name:
+        type: string
+    steps:
+      - run:
+          name: integration-tests
+          command: |
+            export INTEGRATION_TEST_BASE_URL=$(echo $(npx serverless info -s << parameters.stage_name >> | grep -o -m 1 "https://.*$"))
+            npm run test:integration
+
 workflows:
   continuous-delivery:
     jobs:
@@ -47,3 +60,12 @@ workflows:
               ignore: master
           requires:
             - build-and-test
+      - integration-test:
+          name: integration-test
+          stage_name: ${CIRCLE_BRANCH##*/}
+          context: housing-needs-development-context
+          filters:
+            branches:
+              ignore: master
+          requires:
+            - deploy-temporary-branch
