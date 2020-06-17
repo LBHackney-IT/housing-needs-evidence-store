@@ -53,6 +53,8 @@ workflows:
           filters:
             branches:
               only: master
+          requires:
+            - build-and-test
       - deploy:
           name: deploy-temporary-branch
           stage_name: ${CIRCLE_BRANCH##*/}
