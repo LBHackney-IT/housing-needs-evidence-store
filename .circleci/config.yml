@@ -32,14 +32,14 @@ workflows:
     jobs:
       - build-and-test
       - deploy:
-          name: Deploy to production
+          name: deploy-production
           stage_name: prod
           context: housing-needs-development-context
           filters:
             branches:
               only: master
       - deploy:
-          name: Deploy temporary branch
+          name: deploy-temporary-branch
           stage_name: ${CIRCLE_BRANCH##*/}
           context: housing-needs-development-context
           filters:
