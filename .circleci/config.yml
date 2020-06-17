@@ -42,7 +42,7 @@ workflows:
               only: master
       - deploy:
           name: Deploy temporary branch
-          stage_name: ${CIRCLE_BRANCH}
+          stage_name: ${CIRCLE_BRANCH##*/}
           context: housing-needs-development-context
           filters:
             branches:
