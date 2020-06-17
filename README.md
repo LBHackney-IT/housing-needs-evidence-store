@@ -6,23 +6,52 @@
 
 ## Getting started
 
-To run the project locally, which will give you hot reloading whenever you make a change to a file within the src directory - just run this...
+This project uses **npm** for dependency management.
+
+1.  Install the project dependencies
+    ```bash
+    npm install
+    ```
+2.  Start running your local copy of evidence store!
+    ```bash
+    npm run dev
+    ```
+
+## Testing
+
+### Unit tests
 
 ```bash
-npm install
-npm run dev
+npm test # runs all unit tests
+npm test:watch # runs all unit tests, in watch mode
 ```
 
-### Running the tests
-
-To run the tests in watch mode, handy for TDD, you can run...
+### Integration tests
 
 ```bash
-npm run test:watch
+npm run test:integration
 ```
 
-Or, if you just want to run the tests once...
+By default integration tests will run against the local version of evidence store, you can configure this to run against any URL by setting an environment variable before running the tests.
 
 ```bash
-npm test
+export INTEGRATION_TEST_BASE_URL=https://my.evidence.store/test
+npm run test:integration
 ```
+
+## Deployment
+
+### Temporary personal deployments
+
+You can deploy a temporary copy of the application, if you want to debug in a real AWS environment.
+
+```bash
+npm run deploy:personal
+npm run deploy:personal:cleanup # remember to remove it when you're done!
+```
+
+### Automated deployments
+
+A copy of the application is deployed when you open a PR, integration tests are run against this deployment in CircleCI. This deployment is cleaned up when your PR is closed.
+
+Merging into `master` triggers a new production deployment, integration tests **do not** run against production.
