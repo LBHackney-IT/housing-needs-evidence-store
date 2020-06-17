@@ -31,7 +31,8 @@
     "deploy": "serverless deploy",
     "predeploy:personal": "npm run predeploy",
     "deploy:personal": "serverless deploy -s temp-$(whoami)",
-    "deploy:cleanup": "serverless remove -s temp-$(whoami)"
+    "deploy:cleanup": "serverless remove",
+    "deploy:personal:cleanup": "serverless remove -s temp-$(whoami)"
   },
   "repository": {
     "type": "git",
