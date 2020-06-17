@@ -15,6 +15,6 @@ if (require.main === module) {
     console.log(`[dev] <<< Listening on: ${address} >>>`);
     console.log(app.printRoutes());
   });
-} else {
-  module.exports = app;
 }
+
+export default app;
