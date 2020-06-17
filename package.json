@@ -9,7 +9,7 @@
     "fastify": "^2.14.1"
   },
   "devDependencies": {
-    "@nuel/uniformly": "^3.0.2",
+    "@nuel/uniformly": "^3.0.3",
     "@types/node-fetch": "^2.5.7",
     "@typescript-eslint/eslint-plugin": "^3.3.0",
     "@typescript-eslint/parser": "^3.3.0",
