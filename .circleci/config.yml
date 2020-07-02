@@ -9,8 +9,7 @@ jobs:
       - checkout
       - node/with-cache:
           steps:
-            - run: sudo npm i -g @nuel/uniformly
-            - run: npm install --production
+            - run: sudo npm i -g @nuel/uniformly && npm i --production
             - run: npm test
       - store_artifacts:
           path: coverage
@@ -46,7 +45,9 @@ jobs:
       - run:
           name: integration-tests
           command: |
-            export INTEGRATION_TEST_BASE_URL=$(echo $(npx serverless info -s << parameters.stage_name >> | grep -o -m 1 "https://.*$"))
+            npm run build
+            node lib/index.js &
+            export INTEGRATION_TEST_BASE_URL=http://localhost:5050
             npm run test:integration
 
 workflows:
@@ -78,15 +79,6 @@ workflows:
               only: master
           requires:
             - permit-deploy-production
-      - deploy:
-          name: deploy-temporary-branch
-          stage_name: ${CIRCLE_BRANCH##*/}
-          context: housing-needs-development-context
-          filters:
-            branches:
-              ignore: master
-          requires:
-            - build-and-test
       - integration-test:
           name: integration-test
           stage_name: ${CIRCLE_BRANCH##*/}
@@ -95,4 +87,4 @@ workflows:
             branches:
               ignore: master
           requires:
-            - deploy-temporary-branch
+            - build-and-test
