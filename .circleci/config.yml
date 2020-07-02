@@ -9,13 +9,15 @@ jobs:
       - checkout
       - node/with-cache:
           steps:
-            - run: npm install
+            - run: sudo npm i -g @nuel/uniformly
+            - run: npm install --production
             - run: npm test
       - store_artifacts:
           path: coverage
       - persist_to_workspace:
           root: ~/
           paths: .
+
   deploy:
     executor:
       name: node/default
@@ -28,7 +30,10 @@ jobs:
 
       - run:
           name: sls deploy
-          command: npm run deploy -- -s << parameters.stage_name >>
+          command: |
+            sudo npm i -g serverless
+            serverless deploy -s << parameters.stage_name >>
+
   integration-test:
     executor:
       name: node/default
@@ -49,6 +54,22 @@ workflows:
     jobs:
       - build-and-test
       - deploy:
+          name: build-deploy-staging
+          context: housing-needs-development-context
+          stage_name: staging
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only:
+                - master
+      - permit:
+          name: permit-deploy-production
+          context: housing-needs-development-context
+          type: approval
+          requires:
+            - build-deploy-staging
+      - deploy:
           name: deploy-production
           stage_name: prod
           context: housing-needs-development-context
@@ -56,7 +77,7 @@ workflows:
             branches:
               only: master
           requires:
-            - build-and-test
+            - permit-deploy-production
       - deploy:
           name: deploy-temporary-branch
           stage_name: ${CIRCLE_BRANCH##*/}
