@@ -58,6 +58,17 @@ class S3Gateway {
       );
     });
   }
+
+  async get(documentId: string): Promise<Metadata> {
+    const object = await this.client
+      .getObject({
+        Bucket: process.env.bucketName,
+        Key: `${documentId}/${documentId}.json`,
+      })
+      .promise();
+
+    return JSON.parse(object.Body.toString());
+  }
 }
 
 export default S3Gateway;
