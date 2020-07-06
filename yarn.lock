@@ -2528,7 +2528,7 @@ aws-lambda-fastify@^1.4.3:
   resolved "https://registry.npm.taobao.org/aws-lambda-fastify/download/aws-lambda-fastify-1.4.4.tgz#4ee8c823f9c271ff9944be4d8639d3ba1d87dda6"
   integrity sha1-TujII/nCcf+ZRL5NhjnTuh2H3aY=
 
-aws-sdk@^2.706.0:
+aws-sdk@^2.706.0, aws-sdk@^2.709.0:
   version "2.709.0"
   resolved "https://registry.npm.taobao.org/aws-sdk/download/aws-sdk-2.709.0.tgz#33b0c0fe8b9420c65610545394be047ac2d93c8f"
   integrity sha1-M7DA/ouUIMZWEFRTlL4EesLZPI8=
@@ -7681,6 +7681,11 @@ nanoid@^2.1.0:
   version "2.1.11"
   resolved "https://registry.npm.taobao.org/nanoid/download/nanoid-2.1.11.tgz#ec24b8a758d591561531b4176a01e3ab4f0f0280"
   integrity sha1-7CS4p1jVkVYVMbQXagHjq08PAoA=
+
+nanoid@^3.1.10:
+  version "3.1.10"
+  resolved "https://registry.npm.taobao.org/nanoid/download/nanoid-3.1.10.tgz#69a8a52b77892de0d11cede96bc9762852145bc4"
+  integrity sha1-aailK3eJLeDRHO3pa8l2KFIUW8Q=
 
 nanomatch@^1.2.13, nanomatch@^1.2.9:
   version "1.2.13"

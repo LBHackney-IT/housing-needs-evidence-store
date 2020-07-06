@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="db457cf8-2398-440e-8c29-0f101b3beb19" name="Default Changelist" comment="" />
+    <list default="true" id="db457cf8-2398-440e-8c29-0f101b3beb19" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gateways/S3Gateway.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/gateways/S3-Gateway.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gateways/S3Gateway.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/use-cases/save-metadata.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/use-cases/save-metadata.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/use-cases/save-metadata.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/use-cases/save-metadata.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -28,7 +43,7 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="prettierjs.PrettierConfiguration.Package" value="$PROJECT_DIR$/node_modules/prettier" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="preferences.fileTypes" />
     <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
   </component>
   <component name="SvnConfiguration">
@@ -83,9 +98,10 @@
     <state width="1398" height="209" key="GridCell.Tab.0.right/0.23.1440.811@0.23.1440.811" timestamp="1593768174962" />
     <state width="1398" height="209" key="GridCell.Tab.0.right/0.23.1440.816@0.23.1440.816" timestamp="1593005814827" />
     <state width="1398" height="209" key="GridCell.Tab.0.right/0.23.1440.821@0.23.1440.821" timestamp="1592841659910" />
-    <state x="221" y="67" key="SettingsEditor" timestamp="1593768308862">
-      <screen x="0" y="23" width="1440" height="811" />
+    <state x="239" y="66" key="SettingsEditor" timestamp="1594026575322">
+      <screen x="0" y="23" width="1440" height="806" />
     </state>
+    <state x="239" y="66" key="SettingsEditor/0.23.1440.806@0.23.1440.806" timestamp="1594026575322" />
     <state x="221" y="67" key="SettingsEditor/0.23.1440.811@0.23.1440.811" timestamp="1593768308862" />
     <state x="421" y="182" width="598" height="490" key="find.popup" timestamp="1593774171358">
       <screen x="0" y="23" width="1440" height="806" />

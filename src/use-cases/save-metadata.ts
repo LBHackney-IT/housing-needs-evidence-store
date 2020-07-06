@@ -1,13 +1,24 @@
-import S3Gateway from '../gateways/S3Gateway'
+import S3Gateway from '../gateways/S3-Gateway'
 
 class SaveMetadata {
-  S3Gateway: S3Gateway
-  constructor({ S3Gateway }) {
-    this.S3Gateway = S3Gateway;
+  s3Gateway: S3Gateway
+  createDocumentId: () => string
+  constructor(s3Gateway, createDocumentId) {
+    this.s3Gateway = s3Gateway;
+    this.createDocumentId = createDocumentId;
   }
 
-  async execute({metadata}) {
-    await this.S3Gateway.create(metadata);
+  async execute(metadata) {
+    metadata.documentId = this.createDocumentId();
+    await this.s3Gateway.create(metadata);
+
+    const { url, fields } = await this.s3Gateway.createUrl(metadata.documentId);
+
+    return {
+      documentId: metadata.documentId,
+      url,
+      fields,
+    };
   }
 }
 
