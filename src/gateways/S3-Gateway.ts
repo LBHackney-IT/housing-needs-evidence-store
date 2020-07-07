@@ -13,16 +13,14 @@ class S3Gateway {
   }
 
   async create(metadata: Metadata): Promise<Metadata> {
-    this.client.putObject(
+    await this.client.putObject(
       {
         Bucket: this.bucketName,
         Key: `${metadata.documentId}/${metadata.documentId}.json`,
         Body: Buffer.from(JSON.stringify(metadata)),
-      },
-      (err) => {
-        console.log(err);
       }
-    );
+    ).promise();
+
     return metadata;
   }
 
@@ -64,7 +62,7 @@ class S3Gateway {
   async get(documentId: string): Promise<Metadata> {
     const object = await this.client
       .getObject({
-        Bucket: process.env.bucketName,
+        Bucket: this.bucketName,
         Key: `${documentId}/${documentId}.json`,
       })
       .promise();

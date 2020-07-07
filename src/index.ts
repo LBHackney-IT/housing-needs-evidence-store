@@ -1,6 +1,8 @@
 import fastify from 'fastify';
+import  { config } from 'dotenv';
 import { health, saveMetadata, getMetadata } from './routes';
 
+config();
 const app = fastify();
 
 app.route(health);
