@@ -1,7 +1,7 @@
 import AWS from 'aws-sdk';
 
 interface Metadata {
-  [key: string]: any
+  [key: string]: any;
 }
 
 class S3Gateway {
@@ -26,7 +26,9 @@ class S3Gateway {
     return metadata;
   }
 
-  async createUrl(documentId: string): Promise<{url: string, fields: {[key: string]: any}}> {
+  async createUrl(
+    documentId: string
+  ): Promise<{ url: string; fields: { [key: string]: any } }> {
     return new Promise((resolve, reject) => {
       this.client.createPresignedPost(
         {

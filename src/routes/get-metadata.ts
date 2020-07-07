@@ -7,8 +7,8 @@ const createEndpoint = ({ getMetadata }): RouteOptions => ({
   handler: async (_req, reply) => {
     const result = await getMetadata.execute(_req.params.documentId);
     reply.status(200).send(result);
-  }
+  },
 });
 
 export default createEndpoint({ getMetadata });
-export { createEndpoint }
+export { createEndpoint };

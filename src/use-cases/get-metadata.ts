@@ -1,7 +1,7 @@
-import S3Gateway from '../gateways/S3-Gateway'
+import S3Gateway from '../gateways/S3-Gateway';
 
 class GetMetadata {
-  s3Gateway: S3Gateway
+  s3Gateway: S3Gateway;
   constructor(s3Gateway: S3Gateway) {
     this.s3Gateway = s3Gateway;
   }

@@ -66,11 +66,12 @@ describe('S3Gateway', () => {
       dob: '1999-09-09',
       documentId,
     };
-    client.getObject = jest.fn(() => (
-      {
-        promise: () => Promise.resolve({ Body: Buffer.from(JSON.stringify(expectedDocument)) })
-      }
-    ));
+    client.getObject = jest.fn(() => ({
+      promise: () =>
+        Promise.resolve({
+          Body: Buffer.from(JSON.stringify(expectedDocument)),
+        }),
+    }));
 
     const s3Gateway = new S3Gateway(client, 'testBucket');
     const result = await s3Gateway.get(documentId);

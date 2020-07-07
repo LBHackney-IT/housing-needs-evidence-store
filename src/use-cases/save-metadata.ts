@@ -1,8 +1,8 @@
-import S3Gateway from '../gateways/S3-Gateway'
+import S3Gateway from '../gateways/S3-Gateway';
 
 class SaveMetadata {
-  s3Gateway: S3Gateway
-  createDocumentId: () => string
+  s3Gateway: S3Gateway;
+  createDocumentId: () => string;
   constructor(s3Gateway, createDocumentId) {
     this.s3Gateway = s3Gateway;
     this.createDocumentId = createDocumentId;
