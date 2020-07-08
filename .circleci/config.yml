@@ -9,7 +9,8 @@ jobs:
       - checkout
       - node/with-cache:
           steps:
-            - run: sudo npm i -g @nuel/uniformly && npm i --production
+            - run: npm i
+            - run: npm run build
             - run: npm test
       - store_artifacts:
           path: coverage
@@ -30,6 +31,7 @@ jobs:
       - run:
           name: sls deploy
           command: |
+            npm prune --production
             sudo npm i -g serverless
             serverless deploy -s << parameters.stage_name >>
 
@@ -45,7 +47,6 @@ jobs:
       - run:
           name: integration-tests
           command: |
-            npm run build
             node lib/index.js &
             export INTEGRATION_TEST_BASE_URL=http://localhost:5050
             npm run test:integration
