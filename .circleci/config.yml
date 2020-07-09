@@ -9,13 +9,15 @@ jobs:
       - checkout
       - node/with-cache:
           steps:
-            - run: npm install
+            - run: npm i
+            - run: npm run build
             - run: npm test
       - store_artifacts:
           path: coverage
       - persist_to_workspace:
           root: ~/
           paths: .
+
   deploy:
     executor:
       name: node/default
@@ -28,7 +30,11 @@ jobs:
 
       - run:
           name: sls deploy
-          command: npm run deploy -- -s << parameters.stage_name >>
+          command: |
+            npm prune --production
+            sudo npm i -g serverless
+            serverless deploy -s << parameters.stage_name >>
+
   integration-test:
     executor:
       name: node/default
@@ -41,13 +47,30 @@ jobs:
       - run:
           name: integration-tests
           command: |
-            export INTEGRATION_TEST_BASE_URL=$(echo $(npx serverless info -s << parameters.stage_name >> | grep -o -m 1 "https://.*$"))
+            node lib/index.js &
+            export INTEGRATION_TEST_BASE_URL=http://localhost:5050
             npm run test:integration
 
 workflows:
   continuous-delivery:
     jobs:
       - build-and-test
+      - deploy:
+          name: build-deploy-staging
+          context: housing-needs-development-context
+          stage_name: staging
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only:
+                - master
+      - permit:
+          name: permit-deploy-production
+          context: housing-needs-development-context
+          type: approval
+          requires:
+            - build-deploy-staging
       - deploy:
           name: deploy-production
           stage_name: prod
@@ -56,16 +79,7 @@ workflows:
             branches:
               only: master
           requires:
-            - build-and-test
-      - deploy:
-          name: deploy-temporary-branch
-          stage_name: ${CIRCLE_BRANCH##*/}
-          context: housing-needs-development-context
-          filters:
-            branches:
-              ignore: master
-          requires:
-            - build-and-test
+            - permit-deploy-production
       - integration-test:
           name: integration-test
           stage_name: ${CIRCLE_BRANCH##*/}
@@ -74,4 +88,4 @@ workflows:
             branches:
               ignore: master
           requires:
-            - deploy-temporary-branch
+            - build-and-test

@@ -9,6 +9,36 @@ provider:
   timeout: 10
   tracing:
     lambda: true
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+        - s3:DeleteObject
+        - s3:ListBucket
+      Resource: '*'
+    - Effect: Allow
+      Action:
+        - es:ESHttpPost
+        - es:ESHttpPut
+        - es:ESHttpDelete
+        - es:ESHttpGet
+      Resource:
+        - { 'Fn::GetAtt': ['ElasticSearchInstance', 'DomainArn'] }
+        - {
+            'Fn::Join':
+              [
+                '',
+                ['Fn::GetAtt': ['ElasticSearchInstance', 'DomainArn'], '/*'],
+              ],
+          }
+  environment:
+    STORE_BUCKET: '${self:service}-${self:provider.stage}'
+
+package:
+  individually: true
+  exclude:
+    - ./**
 
 functions:
   hn-evidence-store-api:
@@ -20,5 +50,121 @@ functions:
         - lib/**
         - node_modules/**
     events:
-      - http: ANY /
-      - http: ANY /{proxy+}
+      - http:
+          path: /
+          method: ANY
+          authorizer: ${self:custom.authorizer.${self:service}-authorizer}
+      - http:
+          path: /{proxy+}
+          method: ANY
+          authorizer: ${self:custom.authorizer.${self:service}-authorizer}
+
+  hn-evidence-store-authorizer:
+    name: ${self:service}-${self:provider.stage}-authorizer
+    handler: authorizer.handler
+    package:
+      include:
+        - authorizer.js
+        - node_modules/**
+    environment:
+      ALLOWED_GROUPS: 'housingneeds-singleview-beta'
+      JWT_SECRET: ${ssm:/common/hackney-jwt-secret}
+
+resources:
+  Resources:
+    StoreBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.STORE_BUCKET}
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
+        BucketEncryption:
+          ServerSideEncryptionConfiguration:
+            - ServerSideEncryptionByDefault:
+                SSEAlgorithm: AES256
+
+    ElasticSearchInstance:
+      Type: AWS::Elasticsearch::Domain
+      Properties:
+        EBSOptions:
+          EBSEnabled: true
+          VolumeType: gp2
+          VolumeSize: 10
+        ElasticsearchClusterConfig:
+          InstanceType: t2.small.elasticsearch
+          InstanceCount: 1
+          DedicatedMasterEnabled: false
+          ZoneAwarenessEnabled: false
+        ElasticsearchVersion: 7.4
+        AccessPolicies:
+          Version: '2012-10-17'
+          Statement:
+            Action:
+              - es:ESHttpGet
+              - es:ESHttpPut
+              - es:ESHttpPost
+              - es:ESHttpHead
+            Principal: '*'
+            Effect: Allow
+
+    # CloudFrontDistribution:
+    #   Type: AWS::CloudFront::Distribution
+    #   Properties:
+    #     DistributionConfig:
+    #       Aliases:
+    #         - ${self:custom.aliases.${self:provider.stage}}
+    #       PriceClass: PriceClass_100
+    #       ViewerCertificate:
+    #         AcmCertificateArn: arn:aws:acm:us-east-1:402949050862:certificate/a2642366-3457-42b3-bd0b-06a9350c1cd8
+    #         MinimumProtocolVersion: TLSv1.2_2018
+    #         SslSupportMethod: sni-only
+    #       DefaultCacheBehavior:
+    #         TargetOriginId: ${self:service}-${self:provider.stage}-custom-origin
+    #         ViewerProtocolPolicy: 'redirect-to-https'
+    #         AllowedMethods:
+    #           - GET
+    #           - HEAD
+    #           - OPTIONS
+    #           - PUT
+    #           - PATCH
+    #           - POST
+    #           - DELETE
+    #         DefaultTTL: 0
+    #         MaxTTL: 0
+    #         MinTTL: 0
+    #         ForwardedValues:
+    #           QueryString: true
+    #           Headers:
+    #             - Authorization
+    #           Cookies:
+    #             Forward: all
+    #       Enabled: true
+    #       Origins:
+    #         - Id: ${self:service}-${self:provider.stage}-custom-origin
+    #           DomainName: ${self:custom.domain-name}
+    #           OriginPath: /${self:provider.stage}
+    #           CustomOriginConfig:
+    #             HTTPPort: 80
+    #             HTTPSPort: 443
+    #             OriginProtocolPolicy: https-only
+
+custom:
+  authorizer:
+    hn-evidence-store-authorizer:
+      name: ${self:service}-authorizer
+      type: request
+      identitySource: ''
+      resultTtlInSeconds: 0
+  domain-name:
+    Fn::Join:
+      - '.'
+      - - Ref: ApiGatewayRestApi
+        - execute-api
+        - eu-west-2
+        - amazonaws.com
+  aliases:
+    staging: staging.evidence-store.api.hackney.gov.uk
+    production: evidence-store.api.hackney.gov.uk

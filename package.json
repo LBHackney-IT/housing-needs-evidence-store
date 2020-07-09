@@ -9,7 +9,8 @@
     "aws-sdk": "^2.709.0",
     "dotenv": "^8.2.0",
     "fastify": "^3.0.0",
-    "nanoid": "^3.1.10"
+    "nanoid": "^3.1.10",
+    "node-lambda-authorizer": "https://github.com/LBHackney-IT/node-lambda-authorizer.git#0fe9e75"
   },
   "devDependencies": {
     "@nuel/uniformly": "^3.0.3",
@@ -35,11 +36,11 @@
     "prelint": "eslint src/",
     "lint": "prettier src/ README.md --write",
     "predeploy": "npm run build",
-    "deploy": "serverless deploy",
+    "deploy": "serverless deploy --aws-profile hnserverless -s staging",
     "predeploy:personal": "npm run predeploy",
-    "deploy:personal": "serverless deploy -s temp-$(whoami)",
-    "deploy:cleanup": "serverless remove",
-    "deploy:personal:cleanup": "serverless remove -s temp-$(whoami)"
+    "deploy:personal": "serverless deploy --aws-profile hnserverless -s temp-$(whoami)",
+    "deploy:cleanup": "serverless remove --aws-profile hnserverless -s staging",
+    "deploy:personal:cleanup": "serverless remove --aws-profile hnserverless -s temp-$(whoami)"
   },
   "repository": {
     "type": "git",
