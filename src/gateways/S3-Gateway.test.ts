@@ -33,8 +33,7 @@ describe('S3Gateway', () => {
     const result = await s3Gateway.create(metadata);
 
     expect(client.putObject).toHaveBeenCalledWith(
-      expectedObject,
-      expect.any(Function)
+      expectedObject
     );
     expect(result).toBe(metadata);
   });

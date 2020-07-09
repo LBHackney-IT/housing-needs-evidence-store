@@ -64,6 +64,14 @@ class EvidenceStoreClient {
   health(): Promise<Response> {
     return this.request({ method: 'GET', path: '/health' });
   }
+
+  saveMetadata(body): Promise<Response> {
+    return this.request({ method: 'POST', path: '/metadata', body });
+  }
+
+  getMetadata(documentId): Promise<Response> {
+    return this.request({ method: 'GET', path: `/${documentId}` });
+  }
 }
 
 export default EvidenceStoreClient;
