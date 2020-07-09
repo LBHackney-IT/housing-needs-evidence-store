@@ -33,7 +33,6 @@ class S3Gateway {
           Bucket: this.bucketName,
           Expires: 3600,
           Fields: {
-            // success_action_redirect: `http://localhost:3000/${documentId}`,
             success_action_status: '201',
           },
           Conditions: [
