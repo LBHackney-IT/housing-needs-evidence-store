@@ -34,10 +34,8 @@ class S3Gateway {
           },
           Conditions: [
             { bucket: this.bucketName },
-            ['starts-with', '$key', `${documentId}/metadata`],
-            { 'X-Amz-Server-Side-Encryption': 'AES256' },
-            ['starts-with', '$X-Amz-Meta-Description', ''],
-            ['content-length-range', 1, 1024],
+            ['starts-with', '$key', `${documentId}/`],
+            { 'X-Amz-Server-Side-Encryption': 'AES256' }
           ],
         },
         (err, data) => {
