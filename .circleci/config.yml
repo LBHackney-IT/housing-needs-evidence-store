@@ -32,9 +32,10 @@ jobs:
       - run:
           name: sls deploy
           command: |
-            npm prune --production
             sudo npm i -g serverless
-            serverless deploy -s << parameters.stage_name >>
+            sls create_domain -s << parameters.stage_name >>
+            npm prune --production
+            sls deploy -s << parameters.stage_name >>
 
   integration-test:
     executor:

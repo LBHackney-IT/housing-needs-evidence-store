@@ -35,6 +35,9 @@ provider:
   environment:
     STORE_BUCKET: '${self:service}-${self:provider.stage}'
 
+plugins:
+  - serverless-domain-manager
+
 package:
   individually: true
   exclude:
@@ -110,47 +113,6 @@ resources:
             Principal: '*'
             Effect: Allow
 
-    # CloudFrontDistribution:
-    #   Type: AWS::CloudFront::Distribution
-    #   Properties:
-    #     DistributionConfig:
-    #       Aliases:
-    #         - ${self:custom.aliases.${self:provider.stage}}
-    #       PriceClass: PriceClass_100
-    #       ViewerCertificate:
-    #         AcmCertificateArn: arn:aws:acm:us-east-1:402949050862:certificate/a2642366-3457-42b3-bd0b-06a9350c1cd8
-    #         MinimumProtocolVersion: TLSv1.2_2018
-    #         SslSupportMethod: sni-only
-    #       DefaultCacheBehavior:
-    #         TargetOriginId: ${self:service}-${self:provider.stage}-custom-origin
-    #         ViewerProtocolPolicy: 'redirect-to-https'
-    #         AllowedMethods:
-    #           - GET
-    #           - HEAD
-    #           - OPTIONS
-    #           - PUT
-    #           - PATCH
-    #           - POST
-    #           - DELETE
-    #         DefaultTTL: 0
-    #         MaxTTL: 0
-    #         MinTTL: 0
-    #         ForwardedValues:
-    #           QueryString: true
-    #           Headers:
-    #             - Authorization
-    #           Cookies:
-    #             Forward: all
-    #       Enabled: true
-    #       Origins:
-    #         - Id: ${self:service}-${self:provider.stage}-custom-origin
-    #           DomainName: ${self:custom.domain-name}
-    #           OriginPath: /${self:provider.stage}
-    #           CustomOriginConfig:
-    #             HTTPPort: 80
-    #             HTTPSPort: 443
-    #             OriginProtocolPolicy: https-only
-
 custom:
   authorizer:
     hn-evidence-store-authorizer:
@@ -158,13 +120,11 @@ custom:
       type: request
       identitySource: ''
       resultTtlInSeconds: 0
-  domain-name:
-    Fn::Join:
-      - '.'
-      - - Ref: ApiGatewayRestApi
-        - execute-api
-        - eu-west-2
-        - amazonaws.com
-  aliases:
-    staging: staging.evidence-store.api.hackney.gov.uk
-    production: evidence-store.api.hackney.gov.uk
+  domains:
+    staging: staging-evidence-store.api.hackney.gov.uk
+    prod: evidence-store.api.hackney.gov.uk
+  customDomain:
+    domainName: ${self:custom.domains.${self:provider.stage}}
+    basePath: ''
+    certificateName: '*.api.hackney.gov.uk'
+    createRoute53Record: false
