@@ -2,5 +2,5 @@
   "watch": [
     "src"
   ],
-  "exec": "npm run build && node lib/index.js"
+  "exec": "npm run build && node -r dotenv/config lib/index.js"
 }

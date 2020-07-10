@@ -5,10 +5,10 @@ describe('GET /health', () => {
     it('returns 200', async () => {
       const response = await fastify.inject({
         method: 'GET',
-        url: '/health'
+        url: '/health',
       });
 
       expect(response.statusCode).toBe(200);
     });
-  })
+  });
 });

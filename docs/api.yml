@@ -1,0 +1,59 @@
+openapi: "3.0.0"
+info:
+  title: Evidence Store API
+  version: 1.0.0
+paths:
+  /metadata:
+    post:
+      operationId: save-metadata
+      summary: Saves metadata to S3 bucket
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        201:
+          description: Saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/metadata"
+              example:
+                {
+                  "documentId": "kjsak2",
+                  "firstName": "The name",
+                  "dob": "1999-01-01",
+                }
+  /{documentId}:
+    get:
+      operationId: get-metadata
+      summary: Gets a document from S3 using the document id
+      parameters:
+        - $ref: "#/components/parameters/documentId"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/metadata"
+
+components:
+  parameters:
+    documentId:
+      name: documentId
+      in: path
+      required: true
+      description: The id of the document
+      schema:
+        type: string
+
+  schemas:
+    metadata:
+      type: object
+      additionalProperties: true
+      properties:
+        documentId:
+          type: string
+          description: A unique id for the document
