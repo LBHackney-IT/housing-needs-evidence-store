@@ -22,7 +22,7 @@ describe('ElasticsearchGateway', () => {
   });
 
   describe('#index', () => {
-    it('indexes the speified metadata in Elasticsearch', async () => {
+    it('indexes the specified metadata in Elasticsearch', async () => {
       await gateway.index(metadata);
 
       expect(client.index).toHaveBeenCalledWith({
