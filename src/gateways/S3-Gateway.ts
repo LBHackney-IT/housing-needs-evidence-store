@@ -1,8 +1,5 @@
 import AWS from 'aws-sdk';
-
-interface Metadata {
-  [key: string]: any;
-}
+import Metadata from '../interfaces/Metadata';
 
 class S3Gateway {
   client: AWS.S3;
@@ -13,13 +10,13 @@ class S3Gateway {
   }
 
   async create(metadata: Metadata): Promise<Metadata> {
-    await this.client.putObject(
-      {
+    await this.client
+      .putObject({
         Bucket: this.bucketName,
-        Key: `${metadata.documentId}/${metadata.documentId}.json`,
+        Key: `${metadata.documentId}/metadata.json`,
         Body: Buffer.from(JSON.stringify(metadata)),
-      }
-    ).promise();
+      })
+      .promise();
 
     return metadata;
   }
@@ -37,7 +34,7 @@ class S3Gateway {
           },
           Conditions: [
             { bucket: this.bucketName },
-            ['starts-with', '$key', `${documentId}/${documentId}`],
+            ['starts-with', '$key', `${documentId}/metadata`],
             { 'X-Amz-Server-Side-Encryption': 'AES256' },
             ['starts-with', '$X-Amz-Meta-Description', ''],
             ['content-length-range', 1, 1024],
@@ -62,7 +59,7 @@ class S3Gateway {
     const object = await this.client
       .getObject({
         Bucket: this.bucketName,
-        Key: `${documentId}/${documentId}.json`,
+        Key: `${documentId}/metadata.json`,
       })
       .promise();
 

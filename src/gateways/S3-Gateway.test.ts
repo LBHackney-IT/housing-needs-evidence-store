@@ -25,16 +25,14 @@ describe('S3Gateway', () => {
 
     const expectedObject = {
       Bucket: 'testBucket',
-      Key: `${metadata.documentId}/${metadata.documentId}.json`,
+      Key: `${metadata.documentId}/metadata.json`,
       Body: Buffer.from(JSON.stringify(metadata)),
     };
 
     const s3Gateway = new S3Gateway(client, 'testBucket');
     const result = await s3Gateway.create(metadata);
 
-    expect(client.putObject).toHaveBeenCalledWith(
-      expectedObject
-    );
+    expect(client.putObject).toHaveBeenCalledWith(expectedObject);
     expect(result).toBe(metadata);
   });
 

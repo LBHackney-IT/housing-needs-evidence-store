@@ -65,11 +65,11 @@ class EvidenceStoreClient {
     return this.request({ method: 'GET', path: '/health' });
   }
 
-  saveMetadata(body): Promise<Response> {
+  saveMetadata(body: { [key: string]: any }): Promise<Response> {
     return this.request({ method: 'POST', path: '/metadata', body });
   }
 
-  getMetadata(documentId): Promise<Response> {
+  getMetadata(documentId: string): Promise<Response> {
     return this.request({ method: 'GET', path: `/${documentId}` });
   }
 }
