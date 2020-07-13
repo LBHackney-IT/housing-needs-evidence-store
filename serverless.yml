@@ -33,7 +33,10 @@ provider:
               ],
           }
   environment:
-    STORE_BUCKET: '${self:service}-${self:provider.stage}'
+    BUCKET_NAME: '${self:service}-${self:provider.stage}-documents'
+    ES_CLIENT_ENDPOINT:
+      Fn::GetAtt: [ElasticSearchInstance, DomainEndpoint]
+    ES_INDEX_NAME: documents
 
 plugins:
   - serverless-domain-manager
@@ -61,6 +64,20 @@ functions:
           path: /{proxy+}
           method: ANY
           authorizer: ${self:custom.authorizer.${self:service}-authorizer}
+
+hn-evidence-store-s3-upload:
+    name: ${self:service}-${self:provider.stage}-indexer
+    handler: lib/s3/objectCreated.handler
+    package:
+      include:
+        - package.json
+        - lib/**
+        - node_modules/**
+    events:
+      - s3:
+          bucket: ${self:service}-${self:provider.stage}-documents
+          event: s3:ObjectCreated:*
+          existing: true
 
   hn-evidence-store-authorizer:
     name: ${self:service}-${self:provider.stage}-authorizer
