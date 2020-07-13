@@ -39,7 +39,7 @@ export default class SaveMetadataUseCase implements UseCase<SaveMetadataCommand,
     const { url, fields } = await this.s3Gateway.createUrl(created.documentId);
 
     return {
-      documentId: metadata.documentId,
+      documentId: created.documentId,
       url,
       fields,
     };

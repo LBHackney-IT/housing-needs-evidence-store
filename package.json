@@ -6,6 +6,7 @@
   "dependencies": {
     "@elastic/elasticsearch": "^7.8.0",
     "@types/aws-lambda": "^8.10.58",
+    "@types/nanoid": "^2.1.0",
     "@types/node": "^14.0.13",
     "aws-lambda-fastify": "^1.4.3",
     "dotenv": "^8.2.0",
