@@ -1,15 +1,20 @@
 import { S3CreateEvent, S3Handler } from 'aws-lambda';
 import dependencies, { Container } from '../dependencies';
+import { Logger } from '../logging';
+import { IndexDocument } from '../use-cases';
+
+interface HandlerDependencies {
+  logger: Logger;
+  indexDocument: IndexDocument;
+}
 
 const isMetadataFile = (key: string) => key.endsWith('.json');
 const getDocumentIdFromKey = (key: string) => key.split('/')[0];
 
-const createHandler: (container: Container) => S3Handler = (container: Container) => {
-  const {
-    logger,
-    indexDocument: indexer,
-  } = container;
-
+const createHandler: (container: Container) => S3Handler = ({
+  logger,
+  indexDocument: indexer
+}: HandlerDependencies) => {
   return async (event: S3CreateEvent, context) => {
     logger.mergeContext({
       records: event.Records.length,

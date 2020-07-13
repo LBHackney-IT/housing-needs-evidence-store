@@ -3,12 +3,14 @@ import { S3Event, Context } from "aws-lambda";
 import { NoOpLogger } from '../logging/NoOpLogger';
 
 describe('ObjectCreated handler', () => {
-  const container = {
+  const dependencies = {
     logger: new NoOpLogger(),
     indexDocument: { execute: jest.fn() }
   };
 
-  const handler = createHandler(container);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const handler = createHandler(dependencies);
 
   const createS3Event = (key: string) => ({ Records: [{ s3: { object: { key } } }] } as S3Event);
   const createMockContext = () => ({ awsRequestId: 'aws:lambda:123' } as Context);
@@ -20,7 +22,7 @@ describe('ObjectCreated handler', () => {
       jest.fn()
     );
 
-    expect(container.indexDocument.execute).not.toHaveBeenCalled();
+    expect(dependencies.indexDocument.execute).not.toHaveBeenCalled();
   });
 
   it('indexes documents that are not metadata files', async () => {
@@ -30,7 +32,7 @@ describe('ObjectCreated handler', () => {
       jest.fn()
     );
 
-    expect(container.indexDocument.execute).toHaveBeenCalledWith(
+    expect(dependencies.indexDocument.execute).toHaveBeenCalledWith(
       expect.objectContaining({
         documentId: 'abcd12345'
       })
