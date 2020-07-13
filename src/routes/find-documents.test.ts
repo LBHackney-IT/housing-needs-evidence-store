@@ -1,5 +1,6 @@
 import fastify from 'fastify';
 import { createEndpoint } from './find-documents';
+import { FindDocuments } from '../use-cases';
 
 describe('POST /documents', () => {
   const expectedResponse = {
@@ -9,9 +10,9 @@ describe('POST /documents', () => {
     ],
   };
 
-  const findDocuments = {
+  const findDocuments = ({
     execute: jest.fn(() => expectedResponse),
-  };
+  } as unknown) as FindDocuments;
 
   const app = fastify();
   app.route(createEndpoint({ findDocuments }));
@@ -20,7 +21,7 @@ describe('POST /documents', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/documents',
-      body: {
+      payload: {
         firstName: 'Tim',
         lastName: 'Rose',
       },

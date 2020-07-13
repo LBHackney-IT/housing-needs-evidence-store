@@ -10,9 +10,9 @@ describe('Find Documents Use Case', () => {
   };
 
   const usecase = new FindDocuments({
-    elasticSearchGateway: {
+    elasticSearchGateway: ({
       findDocuments: jest.fn(() => Promise.resolve(expectedDocuments)),
-    } as ElasticSearchGateway,
+    } as unknown) as ElasticSearchGateway,
     createDocumentId: jest.fn(() => '123'),
   });
 

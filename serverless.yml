@@ -66,29 +66,29 @@ functions:
           authorizer: ${self:custom.authorizer.${self:service}-authorizer}
 
 hn-evidence-store-s3-upload:
-    name: ${self:service}-${self:provider.stage}-indexer
-    handler: lib/s3/objectCreated.handler
-    package:
-      include:
-        - package.json
-        - lib/**
-        - node_modules/**
-    events:
-      - s3:
-          bucket: ${self:service}-${self:provider.stage}-documents
-          event: s3:ObjectCreated:*
-          existing: true
+  name: ${self:service}-${self:provider.stage}-indexer
+  handler: lib/s3/objectCreated.handler
+  package:
+    include:
+      - package.json
+      - lib/**
+      - node_modules/**
+  events:
+    - s3:
+        bucket: ${self:service}-${self:provider.stage}-documents
+        event: s3:ObjectCreated:*
+        existing: true
 
-  hn-evidence-store-authorizer:
-    name: ${self:service}-${self:provider.stage}-authorizer
-    handler: authorizer.handler
-    package:
-      include:
-        - authorizer.js
-        - node_modules/**
-    environment:
-      ALLOWED_GROUPS: 'housingneeds-singleview-beta'
-      JWT_SECRET: ${ssm:/common/hackney-jwt-secret}
+hn-evidence-store-authorizer:
+  name: ${self:service}-${self:provider.stage}-authorizer
+  handler: authorizer.handler
+  package:
+    include:
+      - authorizer.js
+      - node_modules/**
+  environment:
+    ALLOWED_GROUPS: 'housingneeds-singleview-beta'
+    JWT_SECRET: ${ssm:/common/hackney-jwt-secret}
 
 resources:
   Resources:
@@ -141,7 +141,7 @@ custom:
     staging: staging-evidence-store.api.hackney.gov.uk
     prod: evidence-store.api.hackney.gov.uk
   customDomain:
-    domainName: ${self:custom.domains.${self:provider.stage}}
+    domainName: ${self:custom.domains.${self:provider.stage}, '${env:TEMP_STAGING_NAME}-evidence-store.api.hackney.gov.uk'}
     basePath: ''
     certificateName: '*.api.hackney.gov.uk'
     createRoute53Record: false
