@@ -1,14 +1,44 @@
-import SaveMetadata from './use-cases/save-metadata';
-import GetMetadata from './use-cases/get-metadata';
-import S3Gateway from './gateways/S3-Gateway';
-import { nanoid } from 'nanoid';
 import AWS from 'aws-sdk';
+import { nanoid } from 'nanoid';
+import { console, Logger } from './logging';
+import { S3Gateway } from './gateways';
+import { IndexDocument, GetMetadata, SaveMetadata } from './use-cases';
 
-const s3Client = new AWS.S3();
+export interface Container {
+  logger: Logger;
+  indexDocument: IndexDocument;
+}
 
-const s3Gateway = new S3Gateway(s3Client, process.env.BUCKET_NAME);
-const saveMetadata = new SaveMetadata(s3Gateway, () => nanoid(6));
+class DefaultContainer implements Container {
+  get logger() {
+    return console;
+  }
 
-const getMetadata = new GetMetadata(s3Gateway);
+  get s3Gateway() {
+    return new S3Gateway({
+      logger: this.logger,
+      client: new AWS.S3()
+    });
+  }
 
-export { saveMetadata, getMetadata };
+  get saveMetadata() {
+    return new SaveMetadata({
+      logger: this.logger,
+      gateway: this.s3Gateway,
+      createDocumentId: () => nanoid(6),
+    });
+  }
+
+  get getMetadata() {
+    return new GetMetadata({
+      logger: this.logger,
+      gateway: this.s3Gateway,
+    });
+  }
+
+  get indexDocument() {
+    return new IndexDocument();
+  }
+}
+
+export default new DefaultContainer();
