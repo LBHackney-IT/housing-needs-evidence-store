@@ -1,4 +1,5 @@
-import S3Gateway from './S3-Gateway';
+import { S3Gateway } from './S3Gateway';
+import { NoOpLogger } from '../logging/NoOpLogger';
 
 describe('S3Gateway', () => {
   let client;
@@ -29,20 +30,18 @@ describe('S3Gateway', () => {
       Body: Buffer.from(JSON.stringify(metadata)),
     };
 
-    const s3Gateway = new S3Gateway(client, 'testBucket');
-    const result = await s3Gateway.create(metadata);
+    const s3Gateway = new S3Gateway({
+      logger: new NoOpLogger(),
+      client,
+      bucketName: 'testBucket'
+    });
 
+    const result = await s3Gateway.create(metadata);
     expect(client.putObject).toHaveBeenCalledWith(expectedObject);
     expect(result).toBe(metadata);
   });
 
   it('can create an upload url', async () => {
-    const metadata = {
-      firstName: 'Andrew',
-      dob: '1999-09-09',
-      documentId: '123',
-    };
-
     const expectedData = {
       url: 'https://s3.eu-west-2.amazonaws.com/bucketName',
       fields: {
@@ -50,9 +49,13 @@ describe('S3Gateway', () => {
       },
     };
 
-    const s3Gateway = new S3Gateway(client, 'testBucket');
-    const result = await s3Gateway.createUrl('123');
+    const s3Gateway = new S3Gateway({
+      logger: new NoOpLogger(),
+      client,
+      bucketName: 'testBucket'
+    });
 
+    const result = await s3Gateway.createUrl('123');
     expect(result).toStrictEqual(expectedData);
   });
 
@@ -70,9 +73,13 @@ describe('S3Gateway', () => {
         }),
     }));
 
-    const s3Gateway = new S3Gateway(client, 'testBucket');
-    const result = await s3Gateway.get(documentId);
+    const s3Gateway = new S3Gateway({
+      logger: new NoOpLogger(),
+      client,
+      bucketName: 'testBucket'
+    });
 
+    const result = await s3Gateway.get(documentId);
     expect(result).toStrictEqual(expectedDocument);
   });
 });
