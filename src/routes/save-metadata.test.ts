@@ -1,5 +1,6 @@
 import fastify from 'fastify';
 import { createEndpoint } from './save-metadata';
+import { SaveMetadata } from '../use-cases';
 
 describe('POST /metadata', () => {
   const expectedResponse = {
@@ -12,7 +13,7 @@ describe('POST /metadata', () => {
 
   const saveMetadata = {
     execute: jest.fn(() => expectedResponse),
-  };
+  } as unknown as SaveMetadata;
 
   const app = fastify();
   app.route(createEndpoint({ saveMetadata }));
@@ -21,7 +22,7 @@ describe('POST /metadata', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/metadata',
-      body: {
+      payload: {
         firstName: 'Andrew',
         dob: '1999-01-01',
       },

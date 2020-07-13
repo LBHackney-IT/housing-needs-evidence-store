@@ -1,18 +1,89 @@
-import SaveMetadata from './use-cases/save-metadata';
-import GetMetadata from './use-cases/get-metadata';
-import S3Gateway from './gateways/S3-Gateway';
-import { nanoid } from 'nanoid';
 import AWS from 'aws-sdk';
-import FindDocuments from './use-cases/find-documents';
-import ElasticSearchGateway from './gateways/elasticSearchGateway';
+import { nanoid } from 'nanoid';
+import elasticsearch from '@elastic/elasticsearch';
+import { console, Logger } from './logging';
+import { S3Gateway, ElasticsearchGateway } from './gateways';
+import {
+  IndexDocument,
+  GetMetadata,
+  SaveMetadata,
+  FindDocuments,
+} from './use-cases';
 
-const s3Client = new AWS.S3();
+export interface Container {
+  logger: Logger;
+  indexDocument: IndexDocument;
+  elasticsearchGateway: ElasticsearchGateway;
+  getMetadata: GetMetadata;
+}
 
-const s3Gateway = new S3Gateway(s3Client, process.env.BUCKET_NAME);
-const saveMetadata = new SaveMetadata(s3Gateway, () => nanoid(6));
+export interface Configuration {
+  esClientEndpoint: string;
+  esDocumentsIndex: string;
+}
 
-const getMetadata = new GetMetadata(s3Gateway);
+class DefaultContainer implements Container {
+  get logger() {
+    return console;
+  }
 
-const findDocuments = new FindDocuments(ElasticSearchGateway);
+  get configuration() {
+    return {
+      esClientEndpoint: process.env.ES_CLIENT_ENDPOINT,
+      esDocumentsIndex: process.env.ES_INDEX_NAME,
+      bucketName: process.env.BUCKET_NAME,
+    };
+  }
 
-export { saveMetadata, getMetadata, findDocuments };
+  get s3Gateway() {
+    return new S3Gateway({
+      logger: this.logger,
+      client: new AWS.S3(),
+      bucketName: this.configuration.bucketName,
+    });
+  }
+
+  get elasticsearchGateway() {
+    return new ElasticsearchGateway({
+      logger: this.logger,
+      client: this.elasticsearch,
+      indexName: this.configuration.esDocumentsIndex,
+    });
+  }
+
+  get saveMetadata() {
+    return new SaveMetadata({
+      s3Gateway: this.s3Gateway,
+      createDocumentId: () => nanoid(6),
+    });
+  }
+
+  get getMetadata() {
+    return new GetMetadata({
+      s3Gateway: this.s3Gateway,
+    });
+  }
+
+  get elasticsearch() {
+    return new elasticsearch.Client({
+      node: this.configuration.esClientEndpoint,
+    });
+  }
+
+  get indexDocument() {
+    return new IndexDocument({
+      logger: this.logger,
+      getMetadata: this.getMetadata,
+      elasticsearchGateway: this.elasticsearchGateway,
+    });
+  }
+
+  get findDocuments() {
+    return new FindDocuments({
+      logger: this.logger,
+      elasticsearchGateway: this.elasticsearchGateway,
+    });
+  }
+}
+
+export default new DefaultContainer();

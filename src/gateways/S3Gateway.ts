@@ -1,15 +1,29 @@
 import AWS from 'aws-sdk';
-import Metadata from '../interfaces/Metadata';
+import { DocumentMetadata } from '../domain';
+import { Logger } from "../logging";
 
-class S3Gateway {
+interface S3GatewayDependencies {
+  logger: Logger;
   client: AWS.S3;
   bucketName: string;
-  constructor(client: AWS.S3, bucketName: string) {
+}
+
+export class S3Gateway {
+  logger: Logger;
+  client: AWS.S3;
+  bucketName: string;
+
+  constructor({
+    logger,
+    client,
+    bucketName
+  }: S3GatewayDependencies) {
+    this.logger = logger;
     this.client = client;
     this.bucketName = bucketName;
   }
 
-  async create(metadata: Metadata): Promise<Metadata> {
+  async create(metadata: DocumentMetadata): Promise<DocumentMetadata> {
     await this.client
       .putObject({
         Bucket: this.bucketName,
@@ -40,10 +54,7 @@ class S3Gateway {
         },
         (err, data) => {
           if (err) {
-            console.log('Failed generating pre-signed upload url', {
-              error: err,
-            });
-
+            this.logger.error(err).log('Failed generating pre-signed upload url');
             return reject(err);
           }
 
@@ -53,7 +64,7 @@ class S3Gateway {
     });
   }
 
-  async get(documentId: string): Promise<Metadata> {
+  async get(documentId: string): Promise<DocumentMetadata> {
     const object = await this.client
       .getObject({
         Bucket: this.bucketName,
@@ -64,5 +75,3 @@ class S3Gateway {
     return JSON.parse(object.Body.toString());
   }
 }
-
-export default S3Gateway;

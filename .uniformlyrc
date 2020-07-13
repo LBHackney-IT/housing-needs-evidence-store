@@ -1,5 +1,8 @@
 {
   "jest": {
-    "roots": ["integration", "src"]
+    "roots": ["integration", "src"],
+    "setupFiles": [
+      "<rootDir>/setupTests.ts"
+    ]
   }
 }
