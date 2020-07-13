@@ -95,7 +95,7 @@ resources:
     StoreBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: ${self:provider.environment.STORE_BUCKET}
+        BucketName: ${self:provider.environment.BUCKET_NAME}
         PublicAccessBlockConfiguration:
           BlockPublicAcls: true
           BlockPublicPolicy: true
