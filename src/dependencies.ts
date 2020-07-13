@@ -3,6 +3,8 @@ import GetMetadata from './use-cases/get-metadata';
 import S3Gateway from './gateways/S3-Gateway';
 import { nanoid } from 'nanoid';
 import AWS from 'aws-sdk';
+import FindDocuments from './use-cases/find-documents';
+import ElasticSearchGateway from './gateways/elasticSearchGateway';
 
 const s3Client = new AWS.S3();
 
@@ -11,4 +13,6 @@ const saveMetadata = new SaveMetadata(s3Gateway, () => nanoid(6));
 
 const getMetadata = new GetMetadata(s3Gateway);
 
-export { saveMetadata, getMetadata };
+const findDocuments = new FindDocuments(ElasticSearchGateway);
+
+export { saveMetadata, getMetadata, findDocuments };
