@@ -1,9 +1,10 @@
-import SaveMetadata from './save-metadata';
+import SaveMetadata from './SaveMetadata';
+import { S3Gateway } from '../gateways';
 
 describe('Save Metadata Use Case', () => {
-  const usecase = new SaveMetadata(
-    {
-      create: jest.fn(() => Promise.resolve()),
+  const usecase = new SaveMetadata({
+    s3Gateway: {
+      create: jest.fn(() => Promise.resolve({ documentId: '123' })),
       createUrl: jest.fn(() =>
         Promise.resolve({
           url: 'https://s3.eu-west-2.amazonaws.com/bucketName',
@@ -12,9 +13,9 @@ describe('Save Metadata Use Case', () => {
           },
         })
       ),
-    },
-    jest.fn(() => '123')
-  );
+    } as unknown as S3Gateway,
+    createDocumentId: jest.fn(() => '123')
+  });
 
   it('Saves metadata to S3', async () => {
     const metadata = {
@@ -22,7 +23,7 @@ describe('Save Metadata Use Case', () => {
       dob: '1999-09-09',
     };
 
-    await usecase.execute(metadata);
+    await usecase.execute({ metadata });
 
     expect(usecase.s3Gateway.create).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -39,8 +40,7 @@ describe('Save Metadata Use Case', () => {
       dob: '1999-09-09',
     };
 
-    await usecase.execute(metadata);
-
+    await usecase.execute({ metadata });
     expect(usecase.s3Gateway.createUrl).toHaveBeenCalledWith('123');
   });
 });

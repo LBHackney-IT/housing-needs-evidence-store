@@ -26,13 +26,15 @@ class DefaultContainer implements Container {
     return {
       esClientEndpoint: process.env.ES_CLIENT_ENDPOINT,
       esDocumentsIndex: process.env.ES_INDEX_NAME,
+      bucketName: process.env.BUCKET_NAME,
     };
   }
 
   get s3Gateway() {
     return new S3Gateway({
       logger: this.logger,
-      client: new AWS.S3()
+      client: new AWS.S3(),
+      bucketName: this.configuration.bucketName,
     });
   }
 
@@ -46,16 +48,14 @@ class DefaultContainer implements Container {
 
   get saveMetadata() {
     return new SaveMetadata({
-      logger: this.logger,
-      gateway: this.s3Gateway,
+      s3Gateway: this.s3Gateway,
       createDocumentId: () => nanoid(6),
     });
   }
 
   get getMetadata() {
     return new GetMetadata({
-      logger: this.logger,
-      gateway: this.s3Gateway,
+      s3Gateway: this.s3Gateway,
     })
   }
 

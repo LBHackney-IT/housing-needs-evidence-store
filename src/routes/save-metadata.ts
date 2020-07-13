@@ -1,7 +1,12 @@
-import { saveMetadata } from '../dependencies';
+import dependencies from '../dependencies';
 import { RouteOptions } from 'fastify';
+import { SaveMetadata } from '../use-cases';
 
-const createEndpoint = ({ saveMetadata }): RouteOptions => ({
+interface EndpointDependencies {
+  saveMetadata: SaveMetadata;
+}
+
+const createEndpoint = ({ saveMetadata }: EndpointDependencies): RouteOptions => ({
   method: 'POST',
   url: '/metadata',
   handler: async (req, reply) => {
@@ -10,5 +15,8 @@ const createEndpoint = ({ saveMetadata }): RouteOptions => ({
   },
 });
 
-export default createEndpoint({ saveMetadata });
+export default createEndpoint({
+  saveMetadata: dependencies.saveMetadata,
+});
+
 export { createEndpoint };
