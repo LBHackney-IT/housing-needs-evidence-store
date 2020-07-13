@@ -33,7 +33,7 @@ provider:
               ],
           }
   environment:
-    STORE_BUCKET: '${self:service}-${self:provider.stage}-documents'
+    BUCKET_NAME: '${self:service}-${self:provider.stage}-documents'
     ES_CLIENT_ENDPOINT:
       Fn::GetAtt: [ElasticSearchInstance, DomainEndpoint]
     ES_INDEX_NAME: documents
