@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk';
-import Metadata from '../interfaces/Metadata';
+import { DocumentMetadata } from '../domain';
 import { Logger } from "../logging";
 
 interface S3GatewayDependencies {
@@ -23,7 +23,7 @@ export class S3Gateway {
     this.bucketName = bucketName;
   }
 
-  async create(metadata: Metadata): Promise<Metadata> {
+  async create(metadata: DocumentMetadata): Promise<DocumentMetadata> {
     await this.client
       .putObject({
         Bucket: this.bucketName,
@@ -64,7 +64,7 @@ export class S3Gateway {
     });
   }
 
-  async get(documentId: string): Promise<Metadata> {
+  async get(documentId: string): Promise<DocumentMetadata> {
     const object = await this.client
       .getObject({
         Bucket: this.bucketName,
