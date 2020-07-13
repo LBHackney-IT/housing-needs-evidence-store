@@ -1,12 +1,14 @@
 import AWS from 'aws-sdk';
 import { nanoid } from 'nanoid';
 import { console, Logger } from './logging';
-import { S3Gateway } from './gateways';
+import { S3Gateway, ElasticsearchGateway } from './gateways';
 import { IndexDocument, GetMetadata, SaveMetadata } from './use-cases';
 
 export interface Container {
   logger: Logger;
   indexDocument: IndexDocument;
+  elasticsearchGateway: ElasticsearchGateway;
+  getMetadata: GetMetadata;
 }
 
 class DefaultContainer implements Container {
@@ -37,7 +39,19 @@ class DefaultContainer implements Container {
   }
 
   get indexDocument() {
-    return new IndexDocument();
+    return new IndexDocument({
+      logger: this.logger,
+      getMetadata: this.getMetadata,
+      elasticsearchGateway: this.elasticsearchGateway
+    });
+  }
+
+  get getMetadata() {
+    return new GetMetadata();
+  }
+
+  get elasticsearchGateway() {
+    return new ElasticsearchGateway();
   }
 }
 

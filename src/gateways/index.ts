@@ -1,0 +1,1 @@
+export { ElasticsearchGateway } from './ElasticsearchGateway';
