@@ -11,31 +11,22 @@ jobs:
       - node/with-cache:
           steps:
             - run: npm i
-            - run: npm run build
-            - run: npm test
+      - run:
+          name: build and test
+          command: |
+            npm run build
+            npm test
       - store_artifacts:
           path: coverage
       - persist_to_workspace:
-          root: ~/
-          paths: .
-
-  deploy:
-    executor:
-      name: node/default
-    parameters:
-      stage_name:
-        type: string
-    steps:
-      - attach_workspace:
-          at: ~/
-
-      - run:
-          name: sls deploy
-          command: |
-            sudo npm i -g serverless
-            sls create_domain -s << parameters.stage_name >>
-            npm prune --production
-            sls deploy -s << parameters.stage_name >>
+          root: .
+          paths:
+            - 'integration'
+            - 'lib'
+            - 'node_modules'
+            - 'package.json'
+            - 'setupTests.ts'
+            - '.uniformlyrc'
 
   integration-test:
     executor:
@@ -45,7 +36,7 @@ jobs:
         type: string
     steps:
       - attach_workspace:
-          at: ~/
+          at: .
       - aws-cli/setup:
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
@@ -56,6 +47,25 @@ jobs:
             node lib/index.js &
             export INTEGRATION_TEST_BASE_URL=http://localhost:5050
             npm run test:integration
+
+  deploy:
+    executor:
+      name: node/default
+    parameters:
+      stage_name:
+        type: string
+    steps:
+      - attach_workspace:
+          at: .
+      - node/with-cache:
+          steps:
+            - run: sudo npm i -g serverless
+      - run:
+          name: sls deploy
+          command: |
+            sls create_domain -s << parameters.stage_name >>
+            npm prune --production
+            sls deploy -s << parameters.stage_name >>
 
 workflows:
   continuous-delivery:
