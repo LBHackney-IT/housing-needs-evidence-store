@@ -147,6 +147,3 @@ custom:
     basePath: ''
     certificateName: '*.api.hackney.gov.uk'
     createRoute53Record: false
-  elasticSearch:
-    endpoint:
-      Fn::GetAtt: [ElasticSearchInstance, DomainEndpoint]
