@@ -26,12 +26,13 @@ export class ElasticsearchGateway {
       if (resp.statusCode !== 200) {
         this.client.indices.create({ index: this.indexName }, (err, resp) => {
           if (err)
-            logger.error(
-              `[elasticsearch] index "${this.indexName}" was not created: `,
-              err
-            );
+            this.logger
+              .error(err)
+              .log(`[elasticsearch] index "${this.indexName}" was not created`);
           else
-            logger.log(`[elasticsearch] index "${this.indexName}" was created`);
+            this.logger.log(
+              `[elasticsearch] index "${this.indexName}" was created`
+            );
         });
       }
     });
