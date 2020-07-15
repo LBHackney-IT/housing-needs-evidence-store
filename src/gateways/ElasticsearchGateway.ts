@@ -17,6 +17,24 @@ export class ElasticsearchGateway {
     this.logger = logger;
     this.indexName = indexName;
     this.client = client;
+
+    this.createIndex();
+  }
+
+  createIndex() {
+    this.client.cat.indices({ index: this.indexName }, (err, resp) => {
+      if (resp.statusCode !== 200) {
+        this.client.indices.create({ index: this.indexName }, (err, resp) => {
+          if (err)
+            logger.error(
+              `[elasticsearch] index "${this.indexName}" was not created: `,
+              err
+            );
+          else
+            logger.log(`[elasticsearch] index "${this.indexName}" was created`);
+        });
+      }
+    });
   }
 
   async index(metadata: DocumentMetadata): Promise<void> {
@@ -31,7 +49,7 @@ export class ElasticsearchGateway {
     });
   }
 
-  async findDocuments(metadata: DocumentMetadata): Promise<[string]> {
+  async findDocuments(metadata: DocumentMetadata): Promise<string[]> {
     this.logger
       .mergeContext({ indexName: this.indexName })
       .log('[elasticsearch] searching documents');
@@ -50,6 +68,7 @@ export class ElasticsearchGateway {
         },
       },
     });
-    return response.hits.hits;
+
+    return response.body.hits;
   }
 }

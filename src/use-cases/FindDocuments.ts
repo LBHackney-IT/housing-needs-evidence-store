@@ -1,9 +1,9 @@
 import { DocumentMetadata } from '../domain';
-import { ElasticSearchGateway } from '../gateways';
+import { ElasticsearchGateway } from '../gateways';
 import { UseCase } from './UseCase';
 
-interface SaveFindDocumentsDependencies {
-  elasticSearchGateway: ElasticSearchGateway;
+interface FindDocumentsDependencies {
+  elasticsearchGateway: ElasticsearchGateway;
 }
 
 interface FindDocumentsCommand {
@@ -11,21 +11,21 @@ interface FindDocumentsCommand {
 }
 
 interface FindDocumentsResult {
-  documents: [string];
+  documents: string[];
 }
 
 export default class FindDocumentsUseCase
   implements UseCase<FindDocumentsCommand, FindDocumentsResult> {
-  elasticSearchGateway: ElasticSearchGateway;
+  elasticsearchGateway: ElasticsearchGateway;
 
-  constructor({ elasticSearchGateway }: SaveFindDocumentsDependencies) {
-    this.elasticSearchGateway = elasticSearchGateway;
+  constructor({ elasticsearchGateway }: FindDocumentsDependencies) {
+    this.elasticsearchGateway = elasticsearchGateway;
   }
 
   async execute({
     metadata,
   }: FindDocumentsCommand): Promise<FindDocumentsResult> {
-    const documents = await this.elasticSearchGateway.findDocuments(metadata);
+    const documents = await this.elasticsearchGateway.findDocuments(metadata);
 
     return documents;
   }

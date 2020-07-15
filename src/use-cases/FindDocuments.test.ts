@@ -1,5 +1,5 @@
 import FindDocuments from './FindDocuments';
-import ElasticSearchGateway from '../gateways/ElasticsearchGateway';
+import ElasticsearchGateway from '../gateways/ElasticsearchGateway';
 
 describe('Find Documents Use Case', () => {
   const expectedDocuments = {
@@ -10,9 +10,9 @@ describe('Find Documents Use Case', () => {
   };
 
   const usecase = new FindDocuments({
-    elasticSearchGateway: ({
+    elasticsearchGateway: ({
       findDocuments: jest.fn(() => Promise.resolve(expectedDocuments)),
-    } as unknown) as ElasticSearchGateway,
+    } as unknown) as ElasticsearchGateway,
     createDocumentId: jest.fn(() => '123'),
   });
 

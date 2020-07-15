@@ -35,7 +35,8 @@ provider:
   environment:
     BUCKET_NAME: '${self:service}-${self:provider.stage}-documents'
     ES_CLIENT_ENDPOINT:
-      Fn::GetAtt: [ElasticSearchInstance, DomainEndpoint]
+      Fn::Join:
+        ['', ['https://', Fn::GetAtt: [ElasticSearchInstance, DomainEndpoint]]]
     ES_INDEX_NAME: documents
 
 plugins:
@@ -65,37 +66,37 @@ functions:
           method: ANY
           authorizer: ${self:custom.authorizer.${self:service}-authorizer}
 
-hn-evidence-store-s3-upload:
-  name: ${self:service}-${self:provider.stage}-indexer
-  handler: lib/s3/objectCreated.handler
-  package:
-    include:
-      - package.json
-      - lib/**
-      - node_modules/**
-  events:
-    - s3:
-        bucket: ${self:service}-${self:provider.stage}-documents
-        event: s3:ObjectCreated:*
-        existing: true
+  hn-evidence-store-s3-upload:
+    name: ${self:service}-${self:provider.stage}-indexer
+    handler: lib/s3/objectCreated.handler
+    package:
+      include:
+        - package.json
+        - lib/**
+        - node_modules/**
+    events:
+      - s3:
+          bucket: ${self:service}-${self:provider.stage}-documents
+          event: s3:ObjectCreated:*
+          existing: true
 
-hn-evidence-store-authorizer:
-  name: ${self:service}-${self:provider.stage}-authorizer
-  handler: authorizer.handler
-  package:
-    include:
-      - authorizer.js
-      - node_modules/**
-  environment:
-    ALLOWED_GROUPS: 'housingneeds-singleview-beta'
-    JWT_SECRET: ${ssm:/common/hackney-jwt-secret}
+  hn-evidence-store-authorizer:
+    name: ${self:service}-${self:provider.stage}-authorizer
+    handler: authorizer.handler
+    package:
+      include:
+        - authorizer.js
+        - node_modules/**
+    environment:
+      ALLOWED_GROUPS: 'housingneeds-singleview-beta'
+      JWT_SECRET: ${ssm:/common/hackney-jwt-secret}
 
 resources:
   Resources:
     StoreBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: ${self:provider.environment.STORE_BUCKET}
+        BucketName: ${self:provider.environment.BUCKET_NAME}
         PublicAccessBlockConfiguration:
           BlockPublicAcls: true
           BlockPublicPolicy: true
@@ -138,10 +139,14 @@ custom:
       identitySource: ''
       resultTtlInSeconds: 0
   domains:
-    staging: staging-evidence-store.api.hackney.gov.uk
-    prod: evidence-store.api.hackney.gov.uk
+    base: evidence-store.api.hackney.gov.uk
+    staging: staging-${self:custom.domains.base}
+    prod: ${self:custom.domains.base}
   customDomain:
-    domainName: ${self:custom.domains.${self:provider.stage}, '${env:TEMP_STAGING_NAME}-evidence-store.api.hackney.gov.uk'}
+    domainName: ${self:custom.domains.${self:provider.stage}, '${env:TEMP_STAGING_NAME}-${self:custom.domains.base}'}
     basePath: ''
     certificateName: '*.api.hackney.gov.uk'
     createRoute53Record: false
+  elasticSearch:
+    endpoint:
+      Fn::GetAtt: [ElasticSearchInstance, DomainEndpoint]
