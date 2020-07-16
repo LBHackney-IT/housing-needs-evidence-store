@@ -1,6 +1,7 @@
 import { DocumentMetadata } from '../domain';
 import { ElasticsearchGateway } from '../gateways';
 import { UseCase } from './UseCase';
+import { ElasticsearchDocumentsMetadata } from '../domain/ElasticsearchDocumentsMetadata';
 
 interface FindDocumentsDependencies {
   elasticsearchGateway: ElasticsearchGateway;
@@ -11,7 +12,7 @@ interface FindDocumentsCommand {
 }
 
 interface FindDocumentsResult {
-  documents: string[];
+  documents: ElasticsearchDocumentsMetadata[];
 }
 
 export default class FindDocumentsUseCase
@@ -25,7 +26,9 @@ export default class FindDocumentsUseCase
   async execute({
     metadata,
   }: FindDocumentsCommand): Promise<FindDocumentsResult> {
-    const documents = await this.elasticsearchGateway.findDocuments(metadata);
+    const documents = await this.elasticsearchGateway.findDocuments({
+      metadata,
+    });
 
     return documents;
   }

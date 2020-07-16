@@ -67,7 +67,7 @@ describe('ElasticsearchGateway', () => {
   });
   describe('#findDocument', () => {
     it('searches for document in elasticSearch using metadata', async () => {
-      const result = await gateway.findDocuments(metadata);
+      const result = await gateway.findDocuments({ metadata });
 
       const expectedRequest = {
         index: indexName,
@@ -83,24 +83,26 @@ describe('ElasticsearchGateway', () => {
         },
       };
 
-      const expectedResponse = [
-        {
-          documentId: '1',
-          index: 'documents',
-          score: 0.5,
-          metadata: {
-            name: '123',
+      const expectedResponse = {
+        documents: [
+          {
+            documentId: '1',
+            index: 'documents',
+            score: 0.5,
+            metadata: {
+              name: '123',
+            },
           },
-        },
-        {
-          documentId: '2',
-          index: 'documents',
-          score: 0.9,
-          metadata: {
-            name: 'abc',
+          {
+            documentId: '2',
+            index: 'documents',
+            score: 0.9,
+            metadata: {
+              name: 'abc',
+            },
           },
-        },
-      ];
+        ],
+      };
 
       expect(client.search).toHaveBeenCalledWith(expectedRequest);
       expect(result).toStrictEqual(expectedResponse);
@@ -114,7 +116,9 @@ describe('ElasticsearchGateway', () => {
           throw error;
         });
 
-        await expect(gateway.findDocuments(metadata)).rejects.toThrow(error);
+        await expect(gateway.findDocuments({ metadata })).rejects.toThrow(
+          error
+        );
       });
     });
   });

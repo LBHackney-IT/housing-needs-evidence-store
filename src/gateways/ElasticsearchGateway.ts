@@ -9,6 +9,10 @@ interface ElasticsearchGatewayDependencies {
   client: elasticsearch.Client;
 }
 
+interface FindDocumentMetadata {
+  metadata: Omit<DocumentMetadata, 'documentId'>;
+}
+
 export class ElasticsearchGateway {
   logger: Logger;
   indexName: string;
@@ -32,9 +36,9 @@ export class ElasticsearchGateway {
     });
   }
 
-  async findDocuments(
-    metadata: DocumentMetadata
-  ): Promise<ElasticsearchDocumentsMetadata[]> {
+  async findDocuments({
+    metadata,
+  }: FindDocumentMetadata): Promise<ElasticsearchDocumentsMetadata[]> {
     this.logger
       .mergeContext({ indexName: this.indexName })
       .log('[elasticsearch] searching documents');
@@ -65,6 +69,6 @@ export class ElasticsearchGateway {
       };
     });
 
-    return documents;
+    return { documents };
   }
 }
