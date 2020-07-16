@@ -10,11 +10,19 @@ describe('ElasticsearchGateway', () => {
   let gateway: ElasticsearchGateway;
 
   beforeEach(() => {
+    const elasticSearchResponse = {
+      body: {
+        hits: {
+          hits: [
+            { _index: 'documents', _id: '1', _source: { name: '123' } },
+            { _index: 'documents', _id: '2', _source: { name: 'abc' } },
+          ],
+        },
+      },
+    };
     client = ({
       index: jest.fn(() => Promise.resolve()),
-      search: jest.fn(() =>
-        Promise.resolve({ body: { hits: ['123', 'abc'] } })
-      ),
+      search: jest.fn(() => Promise.resolve(elasticSearchResponse)),
     } as unknown) as elasticsearch.Client;
 
     gateway = new ElasticsearchGateway({
@@ -65,8 +73,25 @@ describe('ElasticsearchGateway', () => {
         },
       };
 
+      const expectedResponse = [
+        {
+          documentId: '1',
+          index: 'documents',
+          metadata: {
+            name: '123',
+          },
+        },
+        {
+          documentId: '2',
+          index: 'documents',
+          metadata: {
+            name: 'abc',
+          },
+        },
+      ];
+
       expect(client.search).toHaveBeenCalledWith(expectedRequest);
-      expect(result).toStrictEqual(['123', 'abc']);
+      expect(result).toStrictEqual(expectedResponse);
     });
 
     describe('when there is an error', () => {
