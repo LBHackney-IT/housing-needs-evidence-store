@@ -14,8 +14,18 @@ describe('ElasticsearchGateway', () => {
       body: {
         hits: {
           hits: [
-            { _index: 'documents', _id: '1', _source: { name: '123' } },
-            { _index: 'documents', _id: '2', _source: { name: 'abc' } },
+            {
+              _index: 'documents',
+              _id: '1',
+              _score: 0.5,
+              _source: { name: '123' },
+            },
+            {
+              _index: 'documents',
+              _id: '2',
+              _score: 0.9,
+              _source: { name: 'abc' },
+            },
           ],
         },
       },
@@ -77,6 +87,7 @@ describe('ElasticsearchGateway', () => {
         {
           documentId: '1',
           index: 'documents',
+          score: 0.5,
           metadata: {
             name: '123',
           },
@@ -84,6 +95,7 @@ describe('ElasticsearchGateway', () => {
         {
           documentId: '2',
           index: 'documents',
+          score: 0.9,
           metadata: {
             name: 'abc',
           },

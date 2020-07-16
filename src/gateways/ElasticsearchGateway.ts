@@ -61,6 +61,7 @@ export class ElasticsearchGateway {
         documentId: doc._id,
         index: doc._index,
         metadata: doc._source,
+        score: doc._score,
       };
     });
 
