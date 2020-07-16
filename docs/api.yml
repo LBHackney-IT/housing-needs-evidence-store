@@ -54,25 +54,18 @@ paths:
           content:
             application/json:
               example:
-                {
-                  'total': { 'value': 2, 'relation': 'eq' },
-                  'max_score': 0.5753642,
-                  'hits':
-                    [
-                      {
-                        '_index': 'documents',
-                        '_type': '_doc',
-                        '_id': 'PnJOIy',
-                        '_score': 0.5753642,
-                        '_source':
-                          {
-                            'documentId': 'PnJOIy',
-                            'firstName': 'toaster',
-                            'lastName': 'dude',
-                          },
-                      },
-                    ],
-                }
+                [
+                  {
+                    'documentId': '1',
+                    'index': 'documents',
+                    'metadata': { 'name': '123' },
+                  },
+                  {
+                    'documentId': '2',
+                    'index': 'documents',
+                    'metadata': { 'name': 'abc' },
+                  },
+                ]
 
 components:
   parameters:
