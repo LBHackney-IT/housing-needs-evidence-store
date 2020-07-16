@@ -38,7 +38,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/metadata'
-  /documents:
+  /search:
     post:
       operationId: find-documents
       summary: Searches elasticsearch for documents with given metadata
