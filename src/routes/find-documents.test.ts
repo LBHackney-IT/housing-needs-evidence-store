@@ -11,7 +11,12 @@ describe('POST /documents', () => {
   };
 
   const findDocuments = ({
-    execute: jest.fn(() => expectedResponse),
+    execute: jest.fn((x) => {
+      if (x.metadata) {
+        return expectedResponse;
+      }
+      throw new Error();
+    }),
   } as unknown) as FindDocuments;
 
   const app = fastify();
@@ -28,5 +33,15 @@ describe('POST /documents', () => {
     });
     expect(response.body).toStrictEqual(JSON.stringify(expectedResponse));
     expect(response.statusCode).toBe(200);
+  });
+
+  it('passes through error code if error is thrown', async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/documents',
+      payload: '',
+    });
+
+    expect(response.statusCode).toBe(500);
   });
 });

@@ -43,9 +43,9 @@ export class ElasticsearchGateway {
       .mergeContext({ indexName: this.indexName })
       .log('[elasticsearch] searching documents');
 
-    const conditionsArray = Object.entries(metadata).map((condition) => {
-      return { match: Object.fromEntries([[condition[0], condition[1]]]) };
-    });
+    const conditionsArray = Object.entries(metadata).map(([key, value]) => ({
+      match: { [key]: value },
+    }));
 
     const response = await this.client.search({
       index: this.indexName,
