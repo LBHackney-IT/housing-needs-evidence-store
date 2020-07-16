@@ -10,7 +10,7 @@ const createEndpoint = ({
   findDocuments,
 }: EndpointDependencies): RouteOptions => ({
   method: 'POST',
-  url: '/documents',
+  url: '/search',
   handler: async (req, reply) => {
     const result = await findDocuments.execute({ metadata: req.body });
     reply.status(200).send(result);

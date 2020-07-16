@@ -2,7 +2,7 @@ import fastify from 'fastify';
 import { createEndpoint } from './find-documents';
 import { FindDocuments } from '../use-cases';
 
-describe('POST /documents', () => {
+describe('POST /search', () => {
   const expectedResponse = {
     documents: [
       { name: '123.jpeg', id: '123' },
@@ -25,7 +25,7 @@ describe('POST /documents', () => {
   it('can find documents', async () => {
     const response = await app.inject({
       method: 'POST',
-      url: '/documents',
+      url: '/search',
       payload: {
         firstName: 'Tim',
         lastName: 'Rose',
@@ -38,7 +38,7 @@ describe('POST /documents', () => {
   it('passes through error code if error is thrown', async () => {
     const response = await app.inject({
       method: 'POST',
-      url: '/documents',
+      url: '/search',
       payload: '',
     });
 
