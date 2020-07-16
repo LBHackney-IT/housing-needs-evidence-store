@@ -54,20 +54,23 @@ paths:
           content:
             application/json:
               example:
-                [
-                  {
-                    'documentId': '1',
-                    'index': 'documents',
-                    'score': 0.3,
-                    'metadata': { 'name': '123' },
-                  },
-                  {
-                    'documentId': '2',
-                    'index': 'documents',
-                    'score': 0.5,
-                    'metadata': { 'name': 'abc' },
-                  },
-                ]
+                {
+                  'documents':
+                    [
+                      {
+                        'documentId': '1',
+                        'index': 'documents',
+                        'score': 0.3,
+                        'metadata': { 'name': '123' },
+                      },
+                      {
+                        'documentId': '2',
+                        'index': 'documents',
+                        'score': 0.5,
+                        'metadata': { 'name': 'abc' },
+                      },
+                    ],
+                }
 
 components:
   parameters:
