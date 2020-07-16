@@ -1,6 +1,6 @@
-import { DocumentMetadata } from "../domain";
+import { DocumentMetadata } from '../domain';
 import elasticsearch from '@elastic/elasticsearch';
-import { Logger } from "../logging";
+import { Logger } from '../logging';
 
 interface ElasticsearchGatewayDependencies {
   logger: Logger;
@@ -13,11 +13,7 @@ export class ElasticsearchGateway {
   indexName: string;
   client: elasticsearch.Client;
 
-  constructor({
-    logger,
-    indexName,
-    client
-  }: ElasticsearchGatewayDependencies) {
+  constructor({ logger, indexName, client }: ElasticsearchGatewayDependencies) {
     this.logger = logger;
     this.indexName = indexName;
     this.client = client;
@@ -31,7 +27,30 @@ export class ElasticsearchGateway {
     await this.client.index({
       index: this.indexName,
       id: metadata.documentId,
-      body: metadata
+      body: metadata,
     });
+  }
+
+  async findDocuments(metadata: DocumentMetadata): Promise<string[]> {
+    this.logger
+      .mergeContext({ indexName: this.indexName })
+      .log('[elasticsearch] searching documents');
+
+    const conditionsArray = Object.entries(metadata).map((condition) => {
+      return { match: Object.fromEntries([[condition[0], condition[1]]]) };
+    });
+
+    const response = await this.client.search({
+      index: this.indexName,
+      body: {
+        query: {
+          bool: {
+            must: conditionsArray,
+          },
+        },
+      },
+    });
+
+    return response.body.hits;
   }
 }
