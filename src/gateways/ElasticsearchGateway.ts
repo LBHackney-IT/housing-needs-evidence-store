@@ -22,6 +22,25 @@ export class ElasticsearchGateway {
     this.logger = logger;
     this.indexName = indexName;
     this.client = client;
+
+    this.createIndex();
+  }
+
+  createIndex() {
+    this.client.cat.indices({ index: this.indexName }, (err, resp) => {
+      if (resp.statusCode !== 200) {
+        this.client.indices.create({ index: this.indexName }, (err, resp) => {
+          if (err)
+            this.logger
+              .error(err)
+              .log(`[elasticsearch] index "${this.indexName}" was not created`);
+          else
+            this.logger.log(
+              `[elasticsearch] index "${this.indexName}" was created`
+            );
+        });
+      }
+    });
   }
 
   async index(metadata: DocumentMetadata): Promise<void> {
