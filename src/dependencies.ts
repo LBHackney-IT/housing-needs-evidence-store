@@ -3,7 +3,12 @@ import { nanoid } from 'nanoid';
 import elasticsearch from '@elastic/elasticsearch';
 import { console, Logger } from './logging';
 import { S3Gateway, ElasticsearchGateway } from './gateways';
-import { IndexDocument, GetMetadata, SaveMetadata } from './use-cases';
+import {
+  IndexDocument,
+  GetMetadata,
+  SaveMetadata,
+  FindDocuments,
+} from './use-cases';
 
 export interface Container {
   logger: Logger;
@@ -56,7 +61,7 @@ class DefaultContainer implements Container {
   get getMetadata() {
     return new GetMetadata({
       s3Gateway: this.s3Gateway,
-    })
+    });
   }
 
   get elasticsearch() {
@@ -69,7 +74,14 @@ class DefaultContainer implements Container {
     return new IndexDocument({
       logger: this.logger,
       getMetadata: this.getMetadata,
-      elasticsearchGateway: this.elasticsearchGateway
+      elasticsearchGateway: this.elasticsearchGateway,
+    });
+  }
+
+  get findDocuments() {
+    return new FindDocuments({
+      logger: this.logger,
+      elasticsearchGateway: this.elasticsearchGateway,
     });
   }
 }
