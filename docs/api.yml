@@ -58,11 +58,13 @@ paths:
                   {
                     'documentId': '1',
                     'index': 'documents',
+                    'score': 0.3,
                     'metadata': { 'name': '123' },
                   },
                   {
                     'documentId': '2',
                     'index': 'documents',
+                    'score': 0.5,
                     'metadata': { 'name': 'abc' },
                   },
                 ]
