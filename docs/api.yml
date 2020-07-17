@@ -61,13 +61,15 @@ paths:
                         'documentId': '1',
                         'index': 'documents',
                         'score': 0.3,
-                        'metadata': { 'name': '123' },
+                        'metadata':
+                          { 'firstName': 'Toaster', 'dob': '1999-01-01' },
                       },
                       {
                         'documentId': '2',
                         'index': 'documents',
                         'score': 0.5,
-                        'metadata': { 'name': 'abc' },
+                        'metadata':
+                          { 'firstName': 'Toaster', 'dob': '1999-01-01' },
                       },
                     ],
                 }
