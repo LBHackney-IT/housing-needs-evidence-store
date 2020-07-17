@@ -1,6 +1,7 @@
-import { DocumentMetadata } from "../domain";
+import { DocumentMetadata } from '../domain';
 import elasticsearch from '@elastic/elasticsearch';
-import { Logger } from "../logging";
+import { Logger } from '../logging';
+import { ElasticsearchDocumentsMetadata } from '../domain/ElasticsearchDocumentsMetadata';
 
 interface ElasticsearchGatewayDependencies {
   logger: Logger;
@@ -8,19 +9,38 @@ interface ElasticsearchGatewayDependencies {
   client: elasticsearch.Client;
 }
 
+interface FindDocumentMetadata {
+  metadata: Omit<DocumentMetadata, 'documentId'>;
+}
+
 export class ElasticsearchGateway {
   logger: Logger;
   indexName: string;
   client: elasticsearch.Client;
 
-  constructor({
-    logger,
-    indexName,
-    client
-  }: ElasticsearchGatewayDependencies) {
+  constructor({ logger, indexName, client }: ElasticsearchGatewayDependencies) {
     this.logger = logger;
     this.indexName = indexName;
     this.client = client;
+
+    this.createIndex();
+  }
+
+  createIndex() {
+    this.client.cat.indices({ index: this.indexName }, (err, resp) => {
+      if (resp.statusCode !== 200) {
+        this.client.indices.create({ index: this.indexName }, (err, resp) => {
+          if (err)
+            this.logger
+              .error(err)
+              .log(`[elasticsearch] index "${this.indexName}" was not created`);
+          else
+            this.logger.log(
+              `[elasticsearch] index "${this.indexName}" was created`
+            );
+        });
+      }
+    });
   }
 
   async index(metadata: DocumentMetadata): Promise<void> {
@@ -31,7 +51,43 @@ export class ElasticsearchGateway {
     await this.client.index({
       index: this.indexName,
       id: metadata.documentId,
-      body: metadata
+      body: metadata,
     });
+  }
+
+  async findDocuments({
+    metadata,
+  }: FindDocumentMetadata): Promise<ElasticsearchDocumentsMetadata[]> {
+    this.logger
+      .mergeContext({ indexName: this.indexName })
+      .log('[elasticsearch] searching documents');
+
+    const conditionsArray = Object.entries(metadata).map(([key, value]) => ({
+      match: { [key]: value },
+    }));
+
+    const response = await this.client.search({
+      index: this.indexName,
+      body: {
+        query: {
+          bool: {
+            must: conditionsArray,
+          },
+        },
+      },
+    });
+
+    const documentHits = response.body.hits.hits;
+
+    const documents = documentHits.map((doc) => {
+      return {
+        documentId: doc._id,
+        index: doc._index,
+        metadata: doc._source,
+        score: doc._score,
+      };
+    });
+
+    return { documents };
   }
 }
