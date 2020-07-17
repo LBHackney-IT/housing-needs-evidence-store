@@ -16,7 +16,7 @@ provider:
         - s3:GetObject
         - s3:DeleteObject
         - s3:ListBucket
-      Resource: "*"
+      Resource: '*'
     - Effect: Allow
       Action:
         - es:ESHttpPost
@@ -24,18 +24,19 @@ provider:
         - es:ESHttpDelete
         - es:ESHttpGet
       Resource:
-        - { "Fn::GetAtt": ["ElasticSearchInstance", "DomainArn"] }
+        - { 'Fn::GetAtt': ['ElasticSearchInstance', 'DomainArn'] }
         - {
-            "Fn::Join":
+            'Fn::Join':
               [
-                "",
-                ["Fn::GetAtt": ["ElasticSearchInstance", "DomainArn"], "/*"],
+                '',
+                ['Fn::GetAtt': ['ElasticSearchInstance', 'DomainArn'], '/*'],
               ],
           }
   environment:
-    BUCKET_NAME: "${self:service}-${self:provider.stage}-documents"
+    BUCKET_NAME: '${self:service}-${self:provider.stage}-documents'
     ES_CLIENT_ENDPOINT:
-      Fn::GetAtt: [ElasticSearchInstance, DomainEndpoint]
+      Fn::Join:
+        ['', ['https://', Fn::GetAtt: [ElasticSearchInstance, DomainEndpoint]]]
     ES_INDEX_NAME: documents
 
 plugins:
@@ -87,7 +88,7 @@ functions:
         - authorizer.js
         - node_modules/**
     environment:
-      ALLOWED_GROUPS: "housingneeds-singleview-beta"
+      ALLOWED_GROUPS: 'housingneeds-singleview-beta'
       JWT_SECRET: ${ssm:/common/hackney-jwt-secret}
 
 resources:
@@ -120,14 +121,14 @@ resources:
           ZoneAwarenessEnabled: false
         ElasticsearchVersion: 7.4
         AccessPolicies:
-          Version: "2012-10-17"
+          Version: '2012-10-17'
           Statement:
             Action:
               - es:ESHttpGet
               - es:ESHttpPut
               - es:ESHttpPost
               - es:ESHttpHead
-            Principal: "*"
+            Principal: '*'
             Effect: Allow
 
 custom:
@@ -135,13 +136,14 @@ custom:
     hn-evidence-store-authorizer:
       name: ${self:service}-authorizer
       type: request
-      identitySource: ""
+      identitySource: ''
       resultTtlInSeconds: 0
   domains:
-    staging: staging-evidence-store.api.hackney.gov.uk
-    prod: evidence-store.api.hackney.gov.uk
+    base: evidence-store.api.hackney.gov.uk
+    staging: staging-${self:custom.domains.base}
+    prod: ${self:custom.domains.base}
   customDomain:
-    domainName: ${self:custom.domains.${self:provider.stage}}
-    basePath: ""
-    certificateName: "*.api.hackney.gov.uk"
+    domainName: ${self:custom.domains.${self:provider.stage}, '${env:TEMP_STAGING_NAME, 'TEMP'}-${self:custom.domains.base}'}
+    basePath: ''
+    certificateName: '*.api.hackney.gov.uk'
     createRoute53Record: false
