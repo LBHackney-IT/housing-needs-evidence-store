@@ -10,7 +10,8 @@ interface GetMetadataQuery {
   documentId: string;
 }
 
-export default class GetMetadataUseCase implements UseCase<GetMetadataQuery, DocumentMetadata> {
+export default class GetMetadataUseCase
+  implements UseCase<GetMetadataQuery, DocumentMetadata> {
   metadata: S3Gateway;
 
   constructor({ s3Gateway }: GetMetadataDependencies) {

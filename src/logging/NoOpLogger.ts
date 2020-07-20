@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Logger, Context } from "./Logger";
+import { Logger, Context } from './Logger';
 
 export class NoOpLogger implements Logger {
   log(_message: string): Logger {

@@ -1,19 +1,21 @@
-import { createHandler } from "./objectCreated";
-import { S3Event, Context } from "aws-lambda";
+import { createHandler } from './objectCreated';
+import { S3Event, Context } from 'aws-lambda';
 import { NoOpLogger } from '../logging/NoOpLogger';
 
 describe('ObjectCreated handler', () => {
   const dependencies = {
     logger: new NoOpLogger(),
-    indexDocument: { execute: jest.fn() }
+    indexDocument: { execute: jest.fn() },
   };
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const handler = createHandler(dependencies);
 
-  const createS3Event = (key: string) => ({ Records: [{ s3: { object: { key } } }] } as S3Event);
-  const createMockContext = () => ({ awsRequestId: 'aws:lambda:123' } as Context);
+  const createS3Event = (key: string) =>
+    ({ Records: [{ s3: { object: { key } } }] } as S3Event);
+  const createMockContext = () =>
+    ({ awsRequestId: 'aws:lambda:123' } as Context);
 
   it('ignores metadata files', async () => {
     await handler(
@@ -34,8 +36,8 @@ describe('ObjectCreated handler', () => {
 
     expect(dependencies.indexDocument.execute).toHaveBeenCalledWith(
       expect.objectContaining({
-        documentId: 'abcd12345'
+        documentId: 'abcd12345',
       })
     );
-  })
+  });
 });

@@ -11,9 +11,9 @@ describe('POST /metadata', () => {
     },
   };
 
-  const saveMetadata = {
+  const saveMetadata = ({
     execute: jest.fn(() => expectedResponse),
-  } as unknown as SaveMetadata;
+  } as unknown) as SaveMetadata;
 
   const app = fastify();
   app.route(createEndpoint({ saveMetadata }));

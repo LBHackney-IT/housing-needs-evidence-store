@@ -11,11 +11,18 @@ interface Params {
   documentId: string;
 }
 
-const createEndpoint = ({ getMetadata }: EndpointDependencies): RouteOptions => ({
+const createEndpoint = ({
+  getMetadata,
+}: EndpointDependencies): RouteOptions => ({
   method: 'GET',
   url: '/:documentId',
-  handler: async (req: FastifyRequest<IncomingMessage, DefaultQuery, Params>, reply) => {
-    const result = await getMetadata.execute({ documentId: req.params.documentId });
+  handler: async (
+    req: FastifyRequest<IncomingMessage, DefaultQuery, Params>,
+    reply
+  ) => {
+    const result = await getMetadata.execute({
+      documentId: req.params.documentId,
+    });
     reply.status(200).send(result);
   },
 });

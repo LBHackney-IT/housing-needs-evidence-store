@@ -40,7 +40,7 @@ describe('ElasticsearchGateway', () => {
           callback(null, { statusCode });
         }),
       },
-      indices: { create: jest.fn(() => {}) },
+      indices: { create: jest.fn() },
     } as unknown) as elasticsearch.Client;
 
     gateway = new ElasticsearchGateway({

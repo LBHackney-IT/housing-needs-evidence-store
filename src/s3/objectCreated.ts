@@ -13,18 +13,24 @@ const getDocumentIdFromKey = (key: string) => key.split('/')[0];
 
 const createHandler: (container: Container) => S3Handler = ({
   logger,
-  indexDocument: indexer
+  indexDocument: indexer,
 }: HandlerDependencies) => {
   return async (event: S3CreateEvent, context) => {
-    logger.mergeContext({
-      records: event.Records.length,
-      awsRequestId: context.awsRequestId,
-    }).log('handling S3 trigger');
+    logger
+      .mergeContext({
+        records: event.Records.length,
+        awsRequestId: context.awsRequestId,
+      })
+      .log('handling S3 trigger');
 
     const { Records: records } = event;
 
     for (const record of records) {
-      const { s3: { object: { key } } } = record;
+      const {
+        s3: {
+          object: { key },
+        },
+      } = record;
       logger.mergeContext({ key, bucket: record.s3.bucket });
 
       if (!isMetadataFile(key)) {
@@ -40,7 +46,7 @@ const createHandler: (container: Container) => S3Handler = ({
       }
     }
   };
-}
+};
 
 const handler = createHandler(dependencies);
 export { handler, createHandler };
