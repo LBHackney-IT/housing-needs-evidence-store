@@ -52,6 +52,6 @@ npm run deploy:personal:cleanup # remember to remove it when you're done!
 
 ### Automated deployments
 
-A copy of the application is deployed when you open a PR, integration tests are run against this deployment in CircleCI. This deployment is cleaned up when your PR is closed.
+CircleCI will run unit and integration tests when a new PR is opened, these do not test the deployment of the application to AWS. They run against local copy of the application running in the CircleCI job instead.
 
-Merging into `master` triggers a new production deployment, integration tests **do not** run against production.
+Merging into `master` triggers a new deployment to staging, there is a manual approval process in CircleCI to trigger deployment to production.
