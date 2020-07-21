@@ -36,17 +36,22 @@ jobs:
       stage_name:
         type: string
     steps:
-      - attach_workspace:
-          at: .
-      - aws-cli/setup:
-          aws-access-key-id: AWS_ACCESS_KEY_ID
-          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-          aws-region: AWS_REGION
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: sudo npm i -g serverless
+      - run:
+          name: sls deploy
+          command: |
+            npm prune --production
+            sls deploy -s test
+      - node/with-cache:
+          steps:
+            - run: npm i
       - run:
           name: integration-tests
           command: |
-            node lib/index.js &
-            export INTEGRATION_TEST_BASE_URL=http://localhost:5050
+            export INTEGRATION_TEST_BASE_URL=$(echo $(npx serverless info -s test | grep -o -m 1 "https://.*$"))
             npm run test:integration
 
   deploy:
