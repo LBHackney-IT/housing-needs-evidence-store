@@ -6,7 +6,9 @@ interface EndpointDependencies {
   saveMetadata: SaveMetadata;
 }
 
-const createEndpoint = ({ saveMetadata }: EndpointDependencies): RouteOptions => ({
+const createEndpoint = ({
+  saveMetadata,
+}: EndpointDependencies): RouteOptions => ({
   method: 'POST',
   url: '/metadata',
   handler: async (req, reply) => {

@@ -13,7 +13,8 @@ interface IndexDocumentCommand {
   documentId: string;
 }
 
-export default class IndexDocumentUseCase implements UseCase<IndexDocumentCommand, void> {
+export default class IndexDocumentUseCase
+  implements UseCase<IndexDocumentCommand, void> {
   logger: Logger;
   getMetadata: GetMetadata;
   es: ElasticsearchGateway;
@@ -21,7 +22,7 @@ export default class IndexDocumentUseCase implements UseCase<IndexDocumentComman
   constructor({
     logger,
     getMetadata,
-    elasticsearchGateway
+    elasticsearchGateway,
   }: IndexDocumentDependencies) {
     this.logger = logger;
     this.getMetadata = getMetadata;
@@ -29,9 +30,7 @@ export default class IndexDocumentUseCase implements UseCase<IndexDocumentComman
   }
 
   async execute({ documentId }: IndexDocumentCommand): Promise<void> {
-    this.logger
-      .mergeContext({ documentId })
-      .log('indexing document');
+    this.logger.mergeContext({ documentId }).log('indexing document');
 
     try {
       const metadata = await this.getMetadata.execute({ documentId });
