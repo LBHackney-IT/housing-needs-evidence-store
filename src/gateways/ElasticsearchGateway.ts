@@ -63,17 +63,19 @@ export class ElasticsearchGateway {
       .log('[elasticsearch] searching documents');
 
     const conditionsArray = Object.entries(metadata).map(([key, value]) => ({
-      match: { [key]: value },
+      terms: { [key]: Array.isArray(value) ? value : [value] },
     }));
+
+    const query = {
+      bool: {
+        must: conditionsArray,
+      },
+    };
 
     const response = await this.client.search({
       index: this.indexName,
       body: {
-        query: {
-          bool: {
-            must: conditionsArray,
-          },
-        },
+        query,
       },
     });
 
