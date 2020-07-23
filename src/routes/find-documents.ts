@@ -28,9 +28,6 @@ const createEndpoint = ({
           message:
             'Metadata object values have to consist of strings or arrays of strings',
         };
-        // }new Error(
-        //     'Metadata object values have to consist of strings or arrays of strings'
-        //   );
       }
     }
 
