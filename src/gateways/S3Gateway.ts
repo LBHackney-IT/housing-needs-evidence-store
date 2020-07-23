@@ -95,6 +95,6 @@ export class S3Gateway {
       })
       .promise();
 
-    return metadata.Metadata ?? {};
+    return metadata.Metadata || {};
   }
 }
