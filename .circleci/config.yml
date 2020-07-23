@@ -39,7 +39,11 @@ jobs:
       - checkout
       - node/with-cache:
           steps:
+            - run: npm i
             - run: sudo npm i -g serverless
+      - run:
+          name: build
+          command: npm run build
       - run:
           name: sls deploy
           command: |
