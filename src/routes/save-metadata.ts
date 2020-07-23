@@ -9,7 +9,7 @@ interface EndpointDependencies {
 const isStringOrArray = (obj) => {
   return (
     typeof obj === 'string' ||
-    (obj.constructor === Array && obj.every((i) => typeof i === 'string'))
+    (Array.isArray(obj) && obj.every((i) => typeof i === 'string'))
   );
 };
 
@@ -21,11 +21,13 @@ const createEndpoint = ({
   handler: async (req, reply) => {
     const metadata = req.body;
 
-    for (const [key, value] of Object.entries(metadata)) {
+    for (const value of Object.values(metadata)) {
       if (!isStringOrArray(value)) {
-        throw new Error(
-          'Metadata object values have to consist of strings or arrays of strings'
-        );
+        throw {
+          status: 400,
+          message:
+            'Metadata object values have to consist of strings or arrays of strings',
+        };
       }
     }
 

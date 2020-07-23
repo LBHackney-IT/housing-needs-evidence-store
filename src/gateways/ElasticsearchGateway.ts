@@ -63,7 +63,7 @@ export class ElasticsearchGateway {
       .log('[elasticsearch] searching documents');
 
     const conditionsArray = Object.entries(metadata).map(([key, value]) => ({
-      terms: { [key]: value.constructor === Array ? value : [value] },
+      terms: { [key]: Array.isArray(value) ? value : [value] },
     }));
 
     const query = {
