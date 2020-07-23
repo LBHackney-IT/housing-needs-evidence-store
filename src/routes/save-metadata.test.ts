@@ -43,7 +43,7 @@ describe('POST /metadata', () => {
 
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body).message).toBe(
-      'Metadata object values have to consist of strings or arrays of strings'
+      'Each metadata value must be a string or an array of strings'
     );
   });
 
@@ -58,7 +58,7 @@ describe('POST /metadata', () => {
 
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body).message).toBe(
-      'Metadata object values have to consist of strings or arrays of strings'
+      'Each metadata value must be a string or an array of strings'
     );
   });
 });

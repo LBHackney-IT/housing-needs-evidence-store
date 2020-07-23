@@ -26,7 +26,7 @@ const createEndpoint = ({
         throw {
           status: 400,
           message:
-            'Metadata object values have to consist of strings or arrays of strings',
+            'Each metadata value must be a string or an array of strings',
         };
       }
     }
