@@ -6,6 +6,13 @@ interface EndpointDependencies {
   saveMetadata: SaveMetadata;
 }
 
+const isStringOrArray = (obj) => {
+  return (
+    typeof obj === 'string' ||
+    (obj.constructor === Array && obj.every((i) => typeof i === 'string'))
+  );
+};
+
 const createEndpoint = ({
   saveMetadata,
 }: EndpointDependencies): RouteOptions => ({
@@ -15,19 +22,10 @@ const createEndpoint = ({
     const metadata = req.body;
 
     for (const [key, value] of Object.entries(metadata)) {
-      if (typeof value === 'string' || value instanceof String) {
-      } else if (value.constructor === Array) {
-        if (
-          value.every((i) => value instanceof String || typeof i === 'string')
-        ) {
-        } else {
-          throw new Error(
-            'Metadata has to consist of strings or arrays of strings'
-          );
-        }
+      if (isStringOrArray(value)) {
       } else {
         throw new Error(
-          'Metadata has to consist of strings or arrays of strings'
+          'Metadata object values have to consist of strings or arrays of strings'
         );
       }
     }

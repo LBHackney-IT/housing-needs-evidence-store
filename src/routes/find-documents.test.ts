@@ -57,7 +57,7 @@ describe('POST /search', () => {
 
     expect(response.statusCode).toBe(500);
     expect(JSON.parse(response.body).message).toBe(
-      'Metadata has to consist of strings or arrays of strings'
+      'Metadata object values have to consist of strings or arrays of strings'
     );
   });
 
@@ -72,7 +72,7 @@ describe('POST /search', () => {
 
     expect(response.statusCode).toBe(500);
     expect(JSON.parse(response.body).message).toBe(
-      'Metadata has to consist of strings or arrays of strings'
+      'Metadata object values have to consist of strings or arrays of strings'
     );
   });
 });
