@@ -38,7 +38,7 @@ class DefaultContainer implements Container {
   get s3Gateway() {
     return new S3Gateway({
       logger: this.logger,
-      client: new AWS.S3(),
+      client: new AWS.S3({ region: 'eu-west-2' }),
       bucketName: this.configuration.bucketName,
     });
   }
