@@ -44,4 +44,35 @@ describe('POST /search', () => {
 
     expect(response.statusCode).toBe(500);
   });
+
+  it('Throws an error if metadata is not strings', async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/search',
+      payload: {
+        firstName: 5,
+        lastName: 'Rose',
+      },
+    });
+
+    expect(response.statusCode).toBe(500);
+    expect(JSON.parse(response.body).message).toBe(
+      'Metadata has to consist of strings or arrays of strings'
+    );
+  });
+
+  it('Throws an error if metadata is not array of strings', async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/search',
+      payload: {
+        lastName: ['Rose', 'Blue', { sneaky: 'object' }],
+      },
+    });
+
+    expect(response.statusCode).toBe(500);
+    expect(JSON.parse(response.body).message).toBe(
+      'Metadata has to consist of strings or arrays of strings'
+    );
+  });
 });

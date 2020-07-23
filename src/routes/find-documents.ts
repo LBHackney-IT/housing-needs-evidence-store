@@ -12,6 +12,26 @@ const createEndpoint = ({
   method: 'POST',
   url: '/search',
   handler: async (req, reply) => {
+    const metadata = req.body;
+
+    for (const [key, value] of Object.entries(metadata)) {
+      if (typeof value === 'string' || value instanceof String) {
+      } else if (value.constructor === Array) {
+        if (
+          value.every((i) => value instanceof String || typeof i === 'string')
+        ) {
+        } else {
+          throw new Error(
+            'Metadata has to consist of strings or arrays of strings'
+          );
+        }
+      } else {
+        throw new Error(
+          'Metadata has to consist of strings or arrays of strings'
+        );
+      }
+    }
+
     const result = await findDocuments.execute({ metadata: req.body });
     reply.status(200).send(result);
   },
