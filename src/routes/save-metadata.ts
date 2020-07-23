@@ -22,8 +22,7 @@ const createEndpoint = ({
     const metadata = req.body;
 
     for (const [key, value] of Object.entries(metadata)) {
-      if (isStringOrArray(value)) {
-      } else {
+      if (!isStringOrArray(value)) {
         throw new Error(
           'Metadata object values have to consist of strings or arrays of strings'
         );

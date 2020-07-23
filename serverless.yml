@@ -143,7 +143,7 @@ custom:
     staging: staging-${self:custom.domains.base}
     prod: ${self:custom.domains.base}
   customDomain:
-    domainName: ${self:custom.domains.${self:provider.stage}, '${env:TEMP_STAGING_NAME}-${self:custom.domains.base}'}
+    domainName: ${self:custom.domains.${self:provider.stage}, '${env:TEMP_STAGING_NAME, 'TEMP'}-${self:custom.domains.base}'}
     basePath: ''
     certificateName: '*.api.hackney.gov.uk'
     createRoute53Record: false

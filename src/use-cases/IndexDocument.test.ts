@@ -7,7 +7,7 @@ describe('IndexDocument', () => {
   const expectedMetadata = {
     documentId: 'tewg61a',
     some: 'key',
-    another: 'value'
+    another: 'value',
   };
 
   let usecase: IndexDocument;
@@ -33,15 +33,17 @@ describe('IndexDocument', () => {
 
   describe('when called with an invalid documentId', () => {
     beforeEach(() => {
-      (getMetadata.execute as jest.Mock).mockImplementation(({ documentId }) => {
-        throw new UnknownDocumentError(documentId);
-      });
+      (getMetadata.execute as jest.Mock).mockImplementation(
+        ({ documentId }) => {
+          throw new UnknownDocumentError(documentId);
+        }
+      );
     });
 
     it('throws UnknownDocumentError', async () => {
-      await expect(
-        usecase.execute({ documentId: 'UNKNOWN' })
-      ).rejects.toThrow(UnknownDocumentError);
+      await expect(usecase.execute({ documentId: 'UNKNOWN' })).rejects.toThrow(
+        UnknownDocumentError
+      );
     });
   });
 });

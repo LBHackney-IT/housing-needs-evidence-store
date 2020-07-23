@@ -17,9 +17,7 @@ describe('ConsoleLogger', () => {
       const context = { key: 'value' };
       logger.mergeContext(context).log('hello world');
 
-      expect(writer).toHaveBeenCalledWith(
-        expect.stringContaining("value")
-      );
+      expect(writer).toHaveBeenCalledWith(expect.stringContaining('value'));
     });
   });
 
@@ -33,8 +31,8 @@ describe('ConsoleLogger', () => {
           error: expect.objectContaining({
             name: error.name,
             message: error.message,
-            stack: error.stack
-          })
+            stack: error.stack,
+          }),
         })
       );
     });
@@ -42,16 +40,14 @@ describe('ConsoleLogger', () => {
 
   describe('#mergeContext', () => {
     it('updates the context with new keys', () => {
-      logger
-        .mergeContext({ abc: '123' })
-        .mergeContext({ def: '456' });
+      logger.mergeContext({ abc: '123' }).mergeContext({ def: '456' });
 
       expect(logger.context).toStrictEqual(
         expect.objectContaining({
           abc: '123',
-          def: '456'
+          def: '456',
         })
       );
     });
-  })
+  });
 });

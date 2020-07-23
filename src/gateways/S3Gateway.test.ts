@@ -33,7 +33,7 @@ describe('S3Gateway', () => {
     const s3Gateway = new S3Gateway({
       logger: new NoOpLogger(),
       client,
-      bucketName: 'testBucket'
+      bucketName: 'testBucket',
     });
 
     const result = await s3Gateway.create(metadata);
@@ -52,7 +52,7 @@ describe('S3Gateway', () => {
     const s3Gateway = new S3Gateway({
       logger: new NoOpLogger(),
       client,
-      bucketName: 'testBucket'
+      bucketName: 'testBucket',
     });
 
     const result = await s3Gateway.createUrl('123');
@@ -76,7 +76,7 @@ describe('S3Gateway', () => {
     const s3Gateway = new S3Gateway({
       logger: new NoOpLogger(),
       client,
-      bucketName: 'testBucket'
+      bucketName: 'testBucket',
     });
 
     const result = await s3Gateway.get(documentId);
