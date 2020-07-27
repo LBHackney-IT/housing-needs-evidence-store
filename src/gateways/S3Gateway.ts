@@ -46,6 +46,7 @@ export class S3Gateway {
             { bucket: this.bucketName },
             ['starts-with', '$key', `${documentId}/`],
             { 'X-Amz-Server-Side-Encryption': 'AES256' },
+            ['starts-with', '$X-Amz-Meta-Description', '']
           ],
         },
         (err, data) => {
