@@ -111,23 +111,13 @@ resources:
         EBSOptions:
           EBSEnabled: true
           VolumeType: gp2
-          VolumeSize: 10
+          VolumeSize: ${self:custom.elasticsearch.${self:provider.stage}.volumeSize}
         ElasticsearchClusterConfig:
-          InstanceType: t2.small.elasticsearch
-          InstanceCount: 1
+          InstanceType: ${self:custom.elasticsearch.${self:provider.stage}.instanceSize}
+          InstanceCount: ${self:custom.elasticsearch.${self:provider.stage}.instanceCount}
           DedicatedMasterEnabled: false
           ZoneAwarenessEnabled: false
         ElasticsearchVersion: 7.4
-        AccessPolicies:
-          Version: "2012-10-17"
-          Statement:
-            Action:
-              - es:ESHttpGet
-              - es:ESHttpPut
-              - es:ESHttpPost
-              - es:ESHttpHead
-            Principal: "*"
-            Effect: Allow
 
 custom:
   authorizer:
@@ -146,3 +136,16 @@ custom:
     basePath: ""
     certificateName: "*.api.hackney.gov.uk"
     createRoute53Record: false
+  elasticsearch:
+    test:
+      instanceSize: t2.small.elasticsearch
+      instanceCount: 1
+      volumeSize: 10
+    staging:
+      instanceSize: t2.small.elasticsearch
+      instanceCount: 1
+      volumeSize: 10
+    prod:
+      instanceSize: t2.small.elasticsearch
+      instanceCount: 1
+      volumeSize: 10
