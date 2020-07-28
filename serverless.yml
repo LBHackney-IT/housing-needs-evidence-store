@@ -58,13 +58,12 @@ functions:
         - node_modules/**
     events:
       - http:
-          path: /
+          path: '{proxy+}'
           method: ANY
           authorizer: ${self:custom.authorizer.${self:service}-authorizer}
-      - http:
-          path: /{proxy+}
-          method: ANY
-          authorizer: ${self:custom.authorizer.${self:service}-authorizer}
+          cors:
+            origin: '*'
+            cacheControl: 'max-age=600, s-maxage=600, proxy-revalidate'
 
   hn-evidence-store-s3-upload:
     name: ${self:service}-${self:provider.stage}-indexer
@@ -106,7 +105,6 @@ resources:
           ServerSideEncryptionConfiguration:
             - ServerSideEncryptionByDefault:
                 SSEAlgorithm: AES256
-
     ElasticSearchInstance:
       Type: AWS::Elasticsearch::Domain
       Properties:

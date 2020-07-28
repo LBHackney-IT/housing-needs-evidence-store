@@ -3,6 +3,10 @@ import { health, saveMetadata, getMetadata, findDocuments } from './routes';
 
 const app = fastify();
 
+app.register(require('fastify-cors'), {
+  origin: /\.hackney\.gov\.uk(:[0-9]*)?$/,
+});
+
 app.route(health);
 app.route(saveMetadata);
 app.route(getMetadata);
