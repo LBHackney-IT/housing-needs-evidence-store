@@ -37,6 +37,7 @@ describe('ObjectCreated handler', () => {
     expect(dependencies.indexDocument.execute).toHaveBeenCalledWith(
       expect.objectContaining({
         documentId: 'abcd12345',
+        filename: 'document.jpg',
       })
     );
   });

@@ -8,6 +8,7 @@ describe('IndexDocument', () => {
     documentId: 'tewg61a',
     some: 'key',
     another: 'value',
+    filename: 'cat.jpg'
   };
 
   let usecase: IndexDocument;
@@ -26,7 +27,10 @@ describe('IndexDocument', () => {
 
   describe('when called with a valid documentId', () => {
     it('indexes existing metadata', async () => {
-      await usecase.execute({ documentId: 'tewg61a' });
+      await usecase.execute({
+        documentId: 'tewg61a',
+        filename: 'cat.jpg'
+      });
       expect(es.index).toHaveBeenCalledWith(expectedMetadata);
     });
   });
@@ -41,7 +45,10 @@ describe('IndexDocument', () => {
     });
 
     it('throws UnknownDocumentError', async () => {
-      await expect(usecase.execute({ documentId: 'UNKNOWN' })).rejects.toThrow(
+      await expect(usecase.execute({
+        documentId: 'UNKNOWN',
+        filename: 'UNKNOWN/readme.txt'
+      })).rejects.toThrow(
         UnknownDocumentError
       );
     });
