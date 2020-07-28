@@ -10,6 +10,7 @@ interface HandlerDependencies {
 
 const isMetadataFile = (key: string) => key.endsWith('.json');
 const getDocumentIdFromKey = (key: string) => key.split('/')[0];
+const getFilenameFromKey = (key: string) => key.split('/').reverse()[0];
 
 const createHandler: (container: Container) => S3Handler = ({
   logger,
@@ -36,7 +37,10 @@ const createHandler: (container: Container) => S3Handler = ({
       if (!isMetadataFile(key)) {
         try {
           logger.log('indexing');
-          await indexer.execute({ documentId: getDocumentIdFromKey(key) });
+          await indexer.execute({
+            documentId: getDocumentIdFromKey(key),
+            filename: getFilenameFromKey(key),
+          });
           logger.log('successfully indexed');
         } catch (err) {
           logger.error(err);
