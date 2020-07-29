@@ -1,7 +1,6 @@
 version: 2.1
 orbs:
   node: circleci/node@1.1.6
-  aws-cli: circleci/aws-cli@1.0.0
 jobs:
   build-and-test:
     executor:
@@ -37,10 +36,6 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - aws-cli/setup:
-          aws-access-key-id: AWS_ACCESS_KEY_ID
-          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-          aws-region: AWS_REGION
       - run:
           name: integration-tests
           command: |
@@ -63,6 +58,7 @@ jobs:
       - run:
           name: sls deploy
           command: |
+            npm run build
             sls create_domain -s << parameters.stage_name >>
             npm prune --production
             sls deploy -s << parameters.stage_name >>
