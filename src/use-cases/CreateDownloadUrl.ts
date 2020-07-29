@@ -18,16 +18,27 @@ interface CreateDownloadUrlResponse {
 
 export default class CreateDownloadUrlUseCase
   implements UseCase<CreateDownloadUrlCommand, CreateDownloadUrlResponse> {
-  metadata: S3Gateway;
+  logger: Logger;
+  storage: S3Gateway;
 
-  constructor({ s3Gateway }: CreateDownloadUrlDependencies) {
-    this.metadata = s3Gateway;
+  constructor({ logger, s3Gateway }: CreateDownloadUrlDependencies) {
+    this.logger = logger;
+    this.storage = s3Gateway;
   }
 
   async execute({
     filename,
     documentId
   }: CreateDownloadUrlCommand): Promise<CreateDownloadUrlResponse> {
-    return { downloadUrl: '' }; // todo!
+    this.logger.mergeContext({
+      filename,
+      documentId
+    }).log('creating temporary download url');
+
+    const downloadUrl = await this
+      .storage
+      .createDownloadUrl(`${documentId}/${filename}`, 300);
+
+    return { downloadUrl };
   }
 }
