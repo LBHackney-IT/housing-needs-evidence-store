@@ -1,3 +1,4 @@
+jest.mock('../dependencies');
 import fastify from 'fastify';
 import { createEndpoint } from './save-metadata';
 import { SaveMetadata } from '../use-cases';

@@ -1,3 +1,4 @@
+jest.mock('../dependencies');
 import { createHandler } from './objectCreated';
 import { S3Event, Context } from 'aws-lambda';
 import { NoOpLogger } from '../logging/NoOpLogger';
