@@ -7,7 +7,6 @@ describe('GET /health', () => {
         method: 'GET',
         url: '/health',
       });
-
       expect(response.statusCode).toBe(200);
     });
   });

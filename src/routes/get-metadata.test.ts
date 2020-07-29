@@ -1,3 +1,4 @@
+jest.mock('../dependencies');
 import fastify from 'fastify';
 import { createEndpoint } from './get-metadata';
 

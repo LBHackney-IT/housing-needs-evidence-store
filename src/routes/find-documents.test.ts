@@ -1,3 +1,4 @@
+jest.mock('../dependencies');
 import fastify from 'fastify';
 import { createEndpoint } from './find-documents';
 import { FindDocuments } from '../use-cases';
