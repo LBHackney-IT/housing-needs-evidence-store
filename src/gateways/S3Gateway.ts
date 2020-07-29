@@ -72,4 +72,17 @@ export class S3Gateway {
 
     return JSON.parse(object.Body.toString());
   }
+
+  async createDownloadUrl(key: string, expiresIn: number): Promise<string> {
+    this.logger.mergeContext({
+      key,
+      expiresIn
+    }).log('creating S3 signed url');
+
+    return await this.client.getSignedUrlPromise('getObject', {
+      Bucket: this.bucketName,
+      Key: key,
+      Expires: expiresIn
+    });
+  }
 }
