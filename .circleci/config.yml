@@ -59,7 +59,7 @@ jobs:
       - run:
           name: integration-tests
           command: |
-            export INTEGRATION_TEST_BASE_URL=$(echo $(npx serverless info -s test | grep -o -m 1 "https://.*$"))
+            export INTEGRATION_TEST_BASE_URL=$(echo $(npx serverless info -s test | grep -o -m 1 "https://.*/test/"))
             npm run test:integration
 
   deploy:
