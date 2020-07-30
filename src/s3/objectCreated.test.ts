@@ -39,6 +39,7 @@ describe('ObjectCreated handler', () => {
       expect.objectContaining({
         documentId: 'abcd12345',
         filename: 'document.jpg',
+        objectKey: 'abcd12345/document.jpg'
       })
     );
   });

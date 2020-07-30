@@ -86,4 +86,15 @@ export class S3Gateway {
       Expires: expiresIn
     });
   }
+
+  async getObjectMetadata(key: string): Promise<Record<string, string>> {
+    const metadata = await this.client
+      .headObject({
+        Bucket: this.bucketName,
+        Key: key
+      })
+      .promise();
+
+    return metadata.Metadata ?? {};
+  }
 }

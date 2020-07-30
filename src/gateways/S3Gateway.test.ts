@@ -126,4 +126,26 @@ describe('S3Gateway', () => {
       'https://s3.eu-west-2.amazonaws.com/bucket/filename.txt'
     );
   });
+
+  it('can get metadata from S3 object', async () => {
+    const expectedObject = {
+      description: "My passport"
+    }
+
+    client.headObject = jest.fn(() => ({
+      promise: () =>
+        Promise.resolve({
+          Metadata: expectedObject,
+        }),
+    }));
+
+    const gateway = new S3Gateway({
+      logger: new NoOpLogger(),
+      client,
+      bucketName: 'testBucket'
+    });
+
+    const result = await gateway.getObjectMetadata('123/Passport.jpg');
+    expect(result).toStrictEqual(expectedObject);
+  });
 });
