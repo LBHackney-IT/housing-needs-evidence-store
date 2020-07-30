@@ -25,7 +25,7 @@ export class ElasticsearchGateway {
     this.createIndex();
   }
 
-  createIndex() {
+  createIndex(): void {
     this.client.cat.indices({ index: this.indexName }, (err, resp) => {
       if (resp.statusCode !== 200) {
         this.client.indices.create({ index: this.indexName }, (err, resp) => {

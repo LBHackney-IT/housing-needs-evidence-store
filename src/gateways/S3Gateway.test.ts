@@ -14,9 +14,11 @@ describe('S3Gateway', () => {
           },
         })
       ),
-      getSignedUrlPromise: jest.fn(() => Promise.resolve(
-        'https://s3.eu-west-2.amazonaws.com/bucket/filename.txt'
-      )),
+      getSignedUrlPromise: jest.fn(() =>
+        Promise.resolve(
+          'https://s3.eu-west-2.amazonaws.com/bucket/filename.txt'
+        )
+      ),
     };
   });
 
@@ -90,15 +92,18 @@ describe('S3Gateway', () => {
     const gateway = new S3Gateway({
       logger: new NoOpLogger(),
       client,
-      bucketName: 'bucket'
+      bucketName: 'bucket',
     });
 
-    const signedUrl = await gateway.createDownloadUrl('bucket/filename.txt', 30);
+    const signedUrl = await gateway.createDownloadUrl(
+      'bucket/filename.txt',
+      30
+    );
 
     expect(client.getSignedUrlPromise).toHaveBeenCalledWith('getObject', {
       Bucket: 'bucket',
       Key: 'bucket/filename.txt',
-      Expires: 30
+      Expires: 30,
     });
 
     expect(signedUrl).toBe(
