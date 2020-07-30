@@ -69,7 +69,7 @@ describe('S3Gateway', () => {
     const s3Gateway = new S3Gateway({
       logger: new NoOpLogger(),
       client,
-      bucketName: 'testBucket'
+      bucketName: 'testBucket',
     });
 
     await s3Gateway.createUrl(documentId);
@@ -79,7 +79,7 @@ describe('S3Gateway', () => {
           ['starts-with', '$key', `${documentId}/`],
           { 'X-Amz-Server-Side-Encryption': 'AES256' },
           ['starts-with', '$X-Amz-Meta-Description', ''],
-        ])
+        ]),
       }),
       expect.any(Function)
     );
@@ -134,8 +134,8 @@ describe('S3Gateway', () => {
 
   it('can get metadata from S3 object', async () => {
     const expectedObject = {
-      description: "My passport"
-    }
+      description: 'My passport',
+    };
 
     client.headObject = jest.fn(() => ({
       promise: () =>
@@ -147,7 +147,7 @@ describe('S3Gateway', () => {
     const gateway = new S3Gateway({
       logger: new NoOpLogger(),
       client,
-      bucketName: 'testBucket'
+      bucketName: 'testBucket',
     });
 
     const result = await gateway.getObjectMetadata('123/Passport.jpg');

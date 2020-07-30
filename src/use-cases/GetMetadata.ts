@@ -19,18 +19,18 @@ export default class GetMetadataUseCase
     this.metadata = s3Gateway;
   }
 
-  async execute({ documentId, objectKey }: GetMetadataQuery): Promise<DocumentMetadata> {
-    const [
-      objectMetadata,
-      predefinedMetadata
-    ] = await Promise.all([
+  async execute({
+    documentId,
+    objectKey,
+  }: GetMetadataQuery): Promise<DocumentMetadata> {
+    const [objectMetadata, predefinedMetadata] = await Promise.all([
       this.metadata.getObjectMetadata(objectKey),
-      this.metadata.get(documentId)
+      this.metadata.get(documentId),
     ]);
 
     return {
       ...objectMetadata,
-      ...predefinedMetadata
-    }
+      ...predefinedMetadata,
+    };
   }
 }

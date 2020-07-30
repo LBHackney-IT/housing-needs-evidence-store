@@ -46,7 +46,7 @@ export class S3Gateway {
             { bucket: this.bucketName },
             ['starts-with', '$key', `${documentId}/`],
             { 'X-Amz-Server-Side-Encryption': 'AES256' },
-            ['starts-with', '$X-Amz-Meta-Description', '']
+            ['starts-with', '$X-Amz-Meta-Description', ''],
           ],
         },
         (err, data) => {
@@ -93,7 +93,7 @@ export class S3Gateway {
     const metadata = await this.client
       .headObject({
         Bucket: this.bucketName,
-        Key: key
+        Key: key,
       })
       .promise();
 

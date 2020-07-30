@@ -33,12 +33,14 @@ describe('ElasticsearchGateway', () => {
 
     client = ({
       index: jest.fn(() => Promise.resolve()),
-      get: jest.fn(() => Promise.resolve({
-        body: {
-          found: true,
-          _source: metadata
-        }
-      })),
+      get: jest.fn(() =>
+        Promise.resolve({
+          body: {
+            found: true,
+            _source: metadata,
+          },
+        })
+      ),
       search: jest.fn(() => Promise.resolve(elasticSearchResponse)),
       cat: {
         indices: jest.fn((index, callback) => {
@@ -64,11 +66,13 @@ describe('ElasticsearchGateway', () => {
 
     it('returns an error if the requested document could not be found', async () => {
       (client.get as jest.Mock).mockImplementation(
-        jest.fn(() => Promise.resolve({
-          body: {
-            found: false
-          }
-        }))
+        jest.fn(() =>
+          Promise.resolve({
+            body: {
+              found: false,
+            },
+          })
+        )
       );
 
       await expect(

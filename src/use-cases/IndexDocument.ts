@@ -32,7 +32,11 @@ export default class IndexDocumentUseCase
     this.es = elasticsearchGateway;
   }
 
-  async execute({ documentId, filename, objectKey }: IndexDocumentCommand): Promise<void> {
+  async execute({
+    documentId,
+    filename,
+    objectKey,
+  }: IndexDocumentCommand): Promise<void> {
     this.logger
       .mergeContext({ documentId, filename, objectKey })
       .log('indexing document');
@@ -40,7 +44,7 @@ export default class IndexDocumentUseCase
     try {
       const metadata = await this.getMetadata.execute({
         documentId,
-        objectKey
+        objectKey,
       });
 
       await this.es.index({ ...metadata, filename });

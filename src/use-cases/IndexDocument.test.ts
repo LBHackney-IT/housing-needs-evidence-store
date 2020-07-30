@@ -16,8 +16,10 @@ describe('IndexDocument', () => {
   let getMetadata: GetMetadata;
 
   beforeEach(() => {
-    es = { index: jest.fn() } as unknown as ElasticsearchGateway;
-    getMetadata = { execute: jest.fn(() => Promise.resolve(expectedMetadata)) } as unknown as GetMetadata;
+    es = ({ index: jest.fn() } as unknown) as ElasticsearchGateway;
+    getMetadata = ({
+      execute: jest.fn(() => Promise.resolve(expectedMetadata)),
+    } as unknown) as GetMetadata;
     usecase = new IndexDocument({
       logger: new NoOpLogger(),
       getMetadata,
@@ -30,12 +32,12 @@ describe('IndexDocument', () => {
       await usecase.execute({
         documentId: 'tewg61a',
         filename: 'passport.jpg',
-        objectKey: 'tewg61a/passport.jpg'
+        objectKey: 'tewg61a/passport.jpg',
       });
 
       expect(getMetadata.execute).toHaveBeenLastCalledWith({
         documentId: 'tewg61a',
-        objectKey: 'tewg61a/passport.jpg'
+        objectKey: 'tewg61a/passport.jpg',
       });
     });
 
@@ -43,7 +45,7 @@ describe('IndexDocument', () => {
       await usecase.execute({
         documentId: 'tewg61a',
         filename: 'cat.jpg',
-        objectKey: 'tewg61a/cat.jpg'
+        objectKey: 'tewg61a/cat.jpg',
       });
 
       expect(es.index).toHaveBeenCalledWith(expectedMetadata);
@@ -62,7 +64,7 @@ describe('IndexDocument', () => {
         usecase.execute({
           documentId: 'UNKNOWN',
           filename: 'passport.jpg',
-          objectKey: 'tewg61a/passport.jpg'
+          objectKey: 'tewg61a/passport.jpg',
         })
       ).rejects.toThrow(UnknownDocumentError);
     });
