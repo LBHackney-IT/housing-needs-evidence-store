@@ -1,6 +1,6 @@
 import { DocumentMetadata } from './DocumentMetadata';
 
-export interface ElasticsearchDocumentsMetadata {
+export interface ElasticsearchDocumentMetadata {
   documentId: string;
   index: string;
   score: number;

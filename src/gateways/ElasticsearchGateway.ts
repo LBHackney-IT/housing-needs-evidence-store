@@ -1,7 +1,6 @@
-import { DocumentMetadata } from '../domain';
-import elasticsearch from '@elastic/elasticsearch';
+import { DocumentMetadata, ElasticsearchDocumentMetadata } from '../domain';
+import * as elasticsearch from '@elastic/elasticsearch';
 import { Logger } from '../logging';
-import { ElasticsearchDocumentsMetadata } from '../domain/ElasticsearchDocumentsMetadata';
 
 interface ElasticsearchGatewayDependencies {
   logger: Logger;
@@ -57,7 +56,7 @@ export class ElasticsearchGateway {
 
   async findDocuments({
     metadata,
-  }: FindDocumentMetadata): Promise<ElasticsearchDocumentsMetadata[]> {
+  }: FindDocumentMetadata): Promise<ElasticsearchDocumentMetadata[]> {
     this.logger
       .mergeContext({ indexName: this.indexName })
       .log('[elasticsearch] searching documents');
@@ -90,6 +89,6 @@ export class ElasticsearchGateway {
       };
     });
 
-    return { documents };
+    return documents;
   }
 }

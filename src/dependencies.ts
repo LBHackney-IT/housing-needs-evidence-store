@@ -81,7 +81,6 @@ class DefaultContainer implements Container {
 
   get findDocuments() {
     return new FindDocuments({
-      logger: this.logger,
       elasticsearchGateway: this.elasticsearchGateway,
     });
   }
