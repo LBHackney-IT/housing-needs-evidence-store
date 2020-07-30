@@ -35,7 +35,6 @@ describe('IndexDocument', () => {
 
       expect(getMetadata.execute).toHaveBeenLastCalledWith({
         documentId: 'tewg61a',
-        filename: 'passport.jpg',
         objectKey: 'tewg61a/passport.jpg'
       });
     });
@@ -43,9 +42,10 @@ describe('IndexDocument', () => {
     it('indexes existing metadata', async () => {
       await usecase.execute({
         documentId: 'tewg61a',
-        filename: 'passport.jpg',
-        objectKey: 'tewg61a/passport.jpg'
+        filename: 'cat.jpg',
+        objectKey: 'tewg61a/cat.jpg'
       });
+
       expect(es.index).toHaveBeenCalledWith(expectedMetadata);
     });
   });
@@ -60,13 +60,6 @@ describe('IndexDocument', () => {
     });
 
     it('throws UnknownDocumentError', async () => {
-      await expect(usecase.execute({
-        documentId: 'UNKNOWN',
-        filename: 'readme.txt',
-        objectKey: 'UNKNOWN/readme.txt'
-      })).rejects.toThrow(
-        UnknownDocumentError
-      );
       await expect(
         usecase.execute({
           documentId: 'UNKNOWN',
