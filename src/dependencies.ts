@@ -8,6 +8,7 @@ import {
   GetMetadata,
   SaveMetadata,
   FindDocuments,
+  CreateDownloadUrl,
 } from './use-cases';
 
 export interface Container {
@@ -82,6 +83,13 @@ class DefaultContainer implements Container {
     return new FindDocuments({
       logger: this.logger,
       elasticsearchGateway: this.elasticsearchGateway,
+    });
+  }
+
+  get createDownloadUrl() {
+    return new CreateDownloadUrl({
+      logger: this.logger,
+      s3Gateway: this.s3Gateway,
     });
   }
 }
