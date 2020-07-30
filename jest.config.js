@@ -1,5 +1,5 @@
 module.exports = {
-  roots: ['<rootDir>/src'],
+  roots: ['<rootDir>/src', '<rootDir>/integration'],
   setupFiles: ['dotenv/config'],
   testEnvironment: 'node',
   testMatch: [

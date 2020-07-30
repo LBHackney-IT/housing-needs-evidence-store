@@ -4,3 +4,4 @@ export { default as GetMetadata } from './GetMetadata';
 export { default as SaveMetadata } from './SaveMetadata';
 export { default as FindDocuments } from './FindDocuments';
 export { default as CreateDownloadUrl } from './CreateDownloadUrl';
+export { default as GetIndexedMetadata } from './GetIndexedMetadata';

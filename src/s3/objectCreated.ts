@@ -40,6 +40,7 @@ const createHandler: (container: Container) => S3Handler = ({
           await indexer.execute({
             documentId: getDocumentIdFromKey(key),
             filename: getFilenameFromKey(key),
+            objectKey: key
           });
           logger.log('successfully indexed');
         } catch (err) {

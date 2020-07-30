@@ -2,6 +2,7 @@ version: 2.1
 orbs:
   node: circleci/node@1.1.6
   aws-cli: circleci/aws-cli@1.0.0
+  queue: eddiewebb/queue@1.5.0
 jobs:
   build-and-test:
     executor:
@@ -35,17 +36,30 @@ jobs:
       stage_name:
         type: string
     steps:
-      - attach_workspace:
-          at: .
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: npm i
+            - run: sudo npm i -g serverless
       - aws-cli/setup:
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           aws-region: AWS_REGION
       - run:
+          name: build
+          command: npm run build
+      - run:
+          name: sls deploy
+          command: |
+            npm prune --production
+            sls deploy -s test
+      - node/with-cache:
+          steps:
+            - run: npm i
+      - run:
           name: integration-tests
           command: |
-            node lib/index.js &
-            export INTEGRATION_TEST_BASE_URL=http://localhost:5050
+            export INTEGRATION_TEST_BASE_URL=$(echo $(npx serverless info -s test | grep -o -m 1 "https://.*/test/"))
             npm run test:integration
 
   deploy:
@@ -97,6 +111,7 @@ workflows:
               only: master
           requires:
             - permit-deploy-production
+      - queue/block_workflow
       - integration-test:
           name: integration-test
           stage_name: ${CIRCLE_BRANCH##*/}
@@ -106,3 +121,4 @@ workflows:
               ignore: master
           requires:
             - build-and-test
+            - queue/block_workflow

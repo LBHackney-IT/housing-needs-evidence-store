@@ -9,6 +9,7 @@ import {
   SaveMetadata,
   FindDocuments,
   CreateDownloadUrl,
+  GetIndexedMetadata,
 } from './use-cases';
 
 export interface Container {
@@ -82,6 +83,12 @@ class DefaultContainer implements Container {
 
   get findDocuments() {
     return new FindDocuments({
+      elasticsearchGateway: this.elasticsearchGateway,
+    });
+  }
+
+  get getIndexedMetadata() {
+    return new GetIndexedMetadata({
       elasticsearchGateway: this.elasticsearchGateway,
     });
   }

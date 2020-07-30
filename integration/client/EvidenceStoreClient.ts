@@ -3,6 +3,7 @@ import fetch from 'node-fetch';
 
 interface EvidenceStoreClientOptions {
   baseUrl: string;
+  authorizationToken: string;
 }
 
 interface Request {
@@ -19,9 +20,11 @@ interface Response {
 
 class EvidenceStoreClient {
   baseUrl: string;
+  authorizationToken?: string;
 
-  constructor({ baseUrl }: EvidenceStoreClientOptions) {
+  constructor({ baseUrl, authorizationToken }: EvidenceStoreClientOptions) {
     this.baseUrl = baseUrl;
+    this.authorizationToken = authorizationToken;
   }
 
   async request({ method, path, body }: Request): Promise<Response> {
@@ -40,6 +43,7 @@ class EvidenceStoreClient {
       headers: {
         accept: 'application/json',
         'content-type': 'application/json',
+        'authorization': `Bearer ${this.authorizationToken}`
       },
     });
 
