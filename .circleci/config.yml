@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   node: circleci/node@1.1.6
+  aws-cli: circleci/aws-cli@1.0.0
 jobs:
   build-and-test:
     executor:
@@ -20,12 +21,12 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - 'integration'
-            - 'lib'
-            - 'node_modules'
-            - 'package.json'
-            - 'setupTests.ts'
-            - '.uniformlyrc'
+            - "integration"
+            - "lib"
+            - "node_modules"
+            - "package.json"
+            - "setupTests.ts"
+            - ".uniformlyrc"
 
   integration-test:
     executor:
@@ -36,6 +37,10 @@ jobs:
     steps:
       - attach_workspace:
           at: .
+      - aws-cli/setup:
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          aws-region: AWS_REGION
       - run:
           name: integration-tests
           command: |
