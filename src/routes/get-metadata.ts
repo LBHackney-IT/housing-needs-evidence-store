@@ -1,6 +1,5 @@
 import dependencies from '../dependencies';
-import { FastifyRequest, RouteOptions, DefaultQuery } from 'fastify';
-import { IncomingMessage } from 'http';
+import { FastifyRequest, RouteOptions } from 'fastify';
 import { GetMetadata } from '../use-cases';
 
 interface EndpointDependencies {
@@ -16,12 +15,9 @@ const createEndpoint = ({
 }: EndpointDependencies): RouteOptions => ({
   method: 'GET',
   url: '/:documentId',
-  handler: async (
-    req: FastifyRequest<IncomingMessage, DefaultQuery, Params>,
-    reply
-  ) => {
+  handler: async (req: FastifyRequest, reply) => {
     const result = await getMetadata.execute({
-      documentId: req.params.documentId,
+      documentId: req.params['documentId'],
     });
     reply.status(200).send(result);
   },

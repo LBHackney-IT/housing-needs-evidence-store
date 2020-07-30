@@ -1,3 +1,4 @@
+jest.mock('../dependencies');
 import fastify from '../index';
 
 describe('GET /health', () => {

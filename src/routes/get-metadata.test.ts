@@ -1,6 +1,7 @@
 jest.mock('../dependencies');
 import fastify from 'fastify';
 import { createEndpoint } from './get-metadata';
+import { GetMetadata } from '../use-cases';
 
 describe('GET /documentId', () => {
   const expectedResponse = {
@@ -9,9 +10,9 @@ describe('GET /documentId', () => {
     dob: '1990-01-01',
   };
 
-  const getMetadata = {
+  const getMetadata = ({
     execute: jest.fn(() => expectedResponse),
-  };
+  } as unknown) as GetMetadata;
 
   const app = fastify();
   app.route(createEndpoint({ getMetadata }));

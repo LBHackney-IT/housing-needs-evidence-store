@@ -1,6 +1,6 @@
-import AWS from 'aws-sdk';
+import * as AWS from 'aws-sdk';
 import { nanoid } from 'nanoid';
-import elasticsearch from '@elastic/elasticsearch';
+import * as elasticsearch from '@elastic/elasticsearch';
 import { console, Logger } from './logging';
 import { S3Gateway, ElasticsearchGateway } from './gateways';
 import {
@@ -21,6 +21,7 @@ export interface Container {
 export interface Configuration {
   esClientEndpoint: string;
   esDocumentsIndex: string;
+  bucketName: string;
 }
 
 class DefaultContainer implements Container {

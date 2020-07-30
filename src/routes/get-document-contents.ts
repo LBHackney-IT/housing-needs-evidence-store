@@ -1,6 +1,5 @@
 import dependencies from '../dependencies';
-import { FastifyRequest, RouteOptions, DefaultQuery } from 'fastify';
-import { IncomingMessage } from 'http';
+import { FastifyRequest, RouteOptions } from 'fastify';
 import { GetMetadata, CreateDownloadUrl } from '../use-cases';
 import { Logger } from '../logging';
 
@@ -14,7 +13,7 @@ interface Params {
   documentId: string;
 }
 
-type Request = FastifyRequest<IncomingMessage, DefaultQuery, Params>;
+type Request = FastifyRequest;
 
 const createEndpoint = ({
   logger,
@@ -25,7 +24,7 @@ const createEndpoint = ({
   url: '/:documentId/contents',
   handler: async (req: Request, reply) => {
     const { documentId, filename } = await getMetadata.execute({
-      documentId: req.params.documentId,
+      documentId: req.params['documentId'],
     });
 
     logger.mergeContext({ documentId, filename });
@@ -33,7 +32,7 @@ const createEndpoint = ({
     if (filename && filename.length > 0) {
       const { downloadUrl } = await createDownloadUrl.execute({
         filename,
-        documentId
+        documentId,
       });
 
       logger.log('redirecting to download url');

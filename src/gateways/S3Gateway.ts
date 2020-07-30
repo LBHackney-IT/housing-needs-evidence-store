@@ -1,4 +1,4 @@
-import AWS from 'aws-sdk';
+import * as AWS from 'aws-sdk';
 import { DocumentMetadata } from '../domain';
 import { Logger } from '../logging';
 
