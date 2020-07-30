@@ -10,6 +10,7 @@ import {
   FindDocuments,
   CreateDownloadUrl,
 } from './use-cases';
+import GetIndexedMetadataUseCase from './use-cases/GetIndexedMetadata';
 
 export interface Container {
   logger: Logger;
@@ -81,7 +82,12 @@ class DefaultContainer implements Container {
 
   get findDocuments() {
     return new FindDocuments({
-      logger: this.logger,
+      elasticsearchGateway: this.elasticsearchGateway,
+    });
+  }
+
+  get getIndexedMetadata() {
+    return new GetIndexedMetadataUseCase({
       elasticsearchGateway: this.elasticsearchGateway,
     });
   }

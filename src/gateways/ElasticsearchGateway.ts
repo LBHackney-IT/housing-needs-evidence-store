@@ -1,4 +1,5 @@
 import { DocumentMetadata } from '../domain';
+import UnknownDocumentError from '../domain/UnknownDocumentError';
 import elasticsearch from '@elastic/elasticsearch';
 import { Logger } from '../logging';
 import { ElasticsearchDocumentsMetadata } from '../domain/ElasticsearchDocumentsMetadata';
@@ -53,6 +54,30 @@ export class ElasticsearchGateway {
       id: metadata.documentId,
       body: metadata,
     });
+  }
+
+  async getByDocumentId(documentId: string): Promise<DocumentMetadata> {
+    this.logger
+      .mergeContext({
+        indexName: this.indexName,
+        documentId,
+      })
+      .log('[elasticsearch] getting document metadata');
+
+    const metadata = await this.client.get({
+      id: documentId,
+      index: this.indexName
+    });
+
+    this.logger
+      .mergeContext({ esGetResponse: metadata })
+      .log('elasticsearch returned response');
+
+    if (!metadata.body.found) {
+      throw new UnknownDocumentError(documentId);
+    }
+
+    return metadata.body._source;
   }
 
   async findDocuments({

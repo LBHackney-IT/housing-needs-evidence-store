@@ -62,6 +62,27 @@ describe('S3Gateway', () => {
     expect(result).toStrictEqual(expectedData);
   });
 
+  it('sets the correct policy conditions on the upload URL', async () => {
+    const documentId = '123';
+    const s3Gateway = new S3Gateway({
+      logger: new NoOpLogger(),
+      client,
+      bucketName: 'testBucket'
+    });
+
+    await s3Gateway.createUrl(documentId);
+    expect(client.createPresignedPost).toHaveBeenCalledWith(
+      expect.objectContaining({
+        Conditions: expect.arrayContaining([
+          ['starts-with', '$key', `${documentId}/`],
+          { 'X-Amz-Server-Side-Encryption': 'AES256' },
+          ['starts-with', '$X-Amz-Meta-Description', ''],
+        ])
+      }),
+      expect.any(Function)
+    );
+  });
+
   it('can get a document by id', async () => {
     const documentId = '123';
     const expectedDocument = {
@@ -104,5 +125,27 @@ describe('S3Gateway', () => {
     expect(signedUrl).toBe(
       'https://s3.eu-west-2.amazonaws.com/bucket/filename.txt'
     );
+  });
+
+  it('can get metadata from S3 object', async () => {
+    const expectedObject = {
+      description: "My passport"
+    }
+
+    client.headObject = jest.fn(() => ({
+      promise: () =>
+        Promise.resolve({
+          Metadata: expectedObject,
+        }),
+    }));
+
+    const gateway = new S3Gateway({
+      logger: new NoOpLogger(),
+      client,
+      bucketName: 'testBucket'
+    });
+
+    const result = await gateway.getObjectMetadata('123/Passport.jpg');
+    expect(result).toStrictEqual(expectedObject);
   });
 });
