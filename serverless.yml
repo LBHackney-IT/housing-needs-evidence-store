@@ -128,7 +128,7 @@ resources:
               - es:ESHttpPut
               - es:ESHttpPost
               - es:ESHttpHead
-            Principal: '*'
+            Principal: 'arn:aws:iam::402949050862:role/${self:service}-${self:provider.stage}-eu-west-2-lambdaRole'
             Effect: Allow
 
 custom:
