@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk';
 import { nanoid } from 'nanoid';
-import elasticsearch from '@elastic/elasticsearch';
+import * as elasticsearch from '@elastic/elasticsearch';
 import { console, Logger } from './logging';
 import { S3Gateway, ElasticsearchGateway } from './gateways';
 import {
@@ -11,6 +11,7 @@ import {
   CreateDownloadUrl,
 } from './use-cases';
 import GetIndexedMetadataUseCase from './use-cases/GetIndexedMetadata';
+import { createAWSConnection, awsCredsifyAll } from '@acuris/aws-es-connection';
 
 export interface Container {
   logger: Logger;
@@ -67,9 +68,14 @@ class DefaultContainer implements Container {
   }
 
   get elasticsearch() {
-    return new elasticsearch.Client({
-      node: this.configuration.esClientEndpoint,
-    });
+    return awsCredsifyAll(
+      new elasticsearch.Client({
+        node: this.configuration.esClientEndpoint,
+        Connection: createAWSConnection(
+          AWS.config.credentials as AWS.Credentials
+        ),
+      })
+    );
   }
 
   get indexDocument() {

@@ -1,11 +1,12 @@
 import { RouteOptions } from 'fastify';
 
-const health: RouteOptions = {
+const createEndpoint = (): RouteOptions => ({
   method: 'GET',
   url: '/health',
   handler: (_req, reply) => {
     reply.status(200).send();
   },
-};
+});
 
-export default health;
+export default createEndpoint();
+export { createEndpoint };
