@@ -3,7 +3,7 @@ import { S3Gateway } from '../gateways';
 
 describe('Save Metadata Use Case', () => {
   const usecase = new SaveMetadata({
-    s3Gateway: {
+    s3Gateway: ({
       create: jest.fn(() => Promise.resolve({ documentId: '123' })),
       createUrl: jest.fn(() =>
         Promise.resolve({
@@ -13,8 +13,8 @@ describe('Save Metadata Use Case', () => {
           },
         })
       ),
-    } as unknown as S3Gateway,
-    createDocumentId: jest.fn(() => '123')
+    } as unknown) as S3Gateway,
+    createDocumentId: jest.fn(() => '123'),
   });
 
   it('Saves metadata to S3', async () => {

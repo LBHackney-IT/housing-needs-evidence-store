@@ -1,4 +1,5 @@
 import { DocumentMetadata } from '../domain';
+import UnknownDocumentError from '../domain/UnknownDocumentError';
 import elasticsearch from '@elastic/elasticsearch';
 import { Logger } from '../logging';
 import { ElasticsearchDocumentsMetadata } from '../domain/ElasticsearchDocumentsMetadata';
@@ -55,6 +56,30 @@ export class ElasticsearchGateway {
     });
   }
 
+  async getByDocumentId(documentId: string): Promise<DocumentMetadata> {
+    this.logger
+      .mergeContext({
+        indexName: this.indexName,
+        documentId,
+      })
+      .log('[elasticsearch] getting document metadata');
+
+    const metadata = await this.client.get({
+      id: documentId,
+      index: this.indexName
+    });
+
+    this.logger
+      .mergeContext({ esGetResponse: metadata })
+      .log('elasticsearch returned response');
+
+    if (!metadata.body.found) {
+      throw new UnknownDocumentError(documentId);
+    }
+
+    return metadata.body._source;
+  }
+
   async findDocuments({
     metadata,
   }: FindDocumentMetadata): Promise<ElasticsearchDocumentsMetadata[]> {
@@ -63,17 +88,19 @@ export class ElasticsearchGateway {
       .log('[elasticsearch] searching documents');
 
     const conditionsArray = Object.entries(metadata).map(([key, value]) => ({
-      match: { [key]: value },
+      terms: { [key]: Array.isArray(value) ? value : [value] },
     }));
+
+    const query = {
+      bool: {
+        must: conditionsArray,
+      },
+    };
 
     const response = await this.client.search({
       index: this.indexName,
       body: {
-        query: {
-          bool: {
-            must: conditionsArray,
-          },
-        },
+        query,
       },
     });
 

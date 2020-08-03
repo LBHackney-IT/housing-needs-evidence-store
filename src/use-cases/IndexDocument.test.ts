@@ -7,7 +7,8 @@ describe('IndexDocument', () => {
   const expectedMetadata = {
     documentId: 'tewg61a',
     some: 'key',
-    another: 'value'
+    another: 'value',
+    filename: 'cat.jpg'
   };
 
   let usecase: IndexDocument;
@@ -15,8 +16,8 @@ describe('IndexDocument', () => {
   let getMetadata: GetMetadata;
 
   beforeEach(() => {
-    es = { index: jest.fn() };
-    getMetadata = { execute: jest.fn(() => Promise.resolve(expectedMetadata)) };
+    es = { index: jest.fn() } as unknown as ElasticsearchGateway;
+    getMetadata = { execute: jest.fn(() => Promise.resolve(expectedMetadata)) } as unknown as GetMetadata;
     usecase = new IndexDocument({
       logger: new NoOpLogger(),
       getMetadata,
@@ -25,22 +26,46 @@ describe('IndexDocument', () => {
   });
 
   describe('when called with a valid documentId', () => {
+    it('passes through the object key to fetch metadata', async () => {
+      await usecase.execute({
+        documentId: 'tewg61a',
+        filename: 'passport.jpg',
+        objectKey: 'tewg61a/passport.jpg'
+      });
+
+      expect(getMetadata.execute).toHaveBeenLastCalledWith({
+        documentId: 'tewg61a',
+        objectKey: 'tewg61a/passport.jpg'
+      });
+    });
+
     it('indexes existing metadata', async () => {
-      await usecase.execute({ documentId: 'tewg61a' });
+      await usecase.execute({
+        documentId: 'tewg61a',
+        filename: 'cat.jpg',
+        objectKey: 'tewg61a/cat.jpg'
+      });
+
       expect(es.index).toHaveBeenCalledWith(expectedMetadata);
     });
   });
 
   describe('when called with an invalid documentId', () => {
     beforeEach(() => {
-      (getMetadata.execute as jest.Mock).mockImplementation(({ documentId }) => {
-        throw new UnknownDocumentError(documentId);
-      });
+      (getMetadata.execute as jest.Mock).mockImplementation(
+        ({ documentId }) => {
+          throw new UnknownDocumentError(documentId);
+        }
+      );
     });
 
     it('throws UnknownDocumentError', async () => {
       await expect(
-        usecase.execute({ documentId: 'UNKNOWN' })
+        usecase.execute({
+          documentId: 'UNKNOWN',
+          filename: 'passport.jpg',
+          objectKey: 'tewg61a/passport.jpg'
+        })
       ).rejects.toThrow(UnknownDocumentError);
     });
   });

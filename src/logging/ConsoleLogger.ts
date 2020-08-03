@@ -1,4 +1,4 @@
-import { Logger, Context } from "./Logger";
+import { Logger, Context } from './Logger';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type WriteFn = (message: any) => void;
@@ -13,11 +13,17 @@ class ConsoleLogger implements Logger {
   }
 
   log(message: string): Logger {
-    this.write(JSON.stringify({
-      datetime: new Date(Date.now()).toISOString(),
-      message,
-      ...this.context,
-    }, undefined, 2));
+    this.write(
+      JSON.stringify(
+        {
+          datetime: new Date(Date.now()).toISOString(),
+          message,
+          ...this.context,
+        },
+        undefined,
+        2
+      )
+    );
 
     return this;
   }
@@ -28,8 +34,8 @@ class ConsoleLogger implements Logger {
         name: error.name,
         message: error.message,
         stack: error.stack,
-        ...error
-      }
+        ...error,
+      },
     }).log(`[error] ${error.message}`);
   }
 

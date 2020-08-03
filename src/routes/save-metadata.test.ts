@@ -1,3 +1,4 @@
+jest.mock('../dependencies');
 import fastify from 'fastify';
 import { createEndpoint } from './save-metadata';
 import { SaveMetadata } from '../use-cases';
@@ -11,9 +12,9 @@ describe('POST /metadata', () => {
     },
   };
 
-  const saveMetadata = {
+  const saveMetadata = ({
     execute: jest.fn(() => expectedResponse),
-  } as unknown as SaveMetadata;
+  } as unknown) as SaveMetadata;
 
   const app = fastify();
   app.route(createEndpoint({ saveMetadata }));
@@ -29,5 +30,36 @@ describe('POST /metadata', () => {
     });
     expect(response.body).toStrictEqual(JSON.stringify(expectedResponse));
     expect(response.statusCode).toBe(201);
+  });
+
+  it('Throws an error if metadata is not strings', async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/metadata',
+      payload: {
+        firstName: 5,
+        lastName: 'Rose',
+      },
+    });
+
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body).message).toBe(
+      'Each metadata value must be a string or an array of strings'
+    );
+  });
+
+  it('Throws an error if metadata is not array of strings', async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/metadata',
+      payload: {
+        lastName: ['Rose', 'Blue', { sneaky: 'object' }],
+      },
+    });
+
+    expect(response.statusCode).toBe(400);
+    expect(JSON.parse(response.body).message).toBe(
+      'Each metadata value must be a string or an array of strings'
+    );
   });
 });

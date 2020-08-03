@@ -33,6 +33,12 @@ describe('ElasticsearchGateway', () => {
 
     client = ({
       index: jest.fn(() => Promise.resolve()),
+      get: jest.fn(() => Promise.resolve({
+        body: {
+          found: true,
+          _source: metadata
+        }
+      })),
       search: jest.fn(() => Promise.resolve(elasticSearchResponse)),
       cat: {
         indices: jest.fn((index, callback) => {
@@ -40,13 +46,34 @@ describe('ElasticsearchGateway', () => {
           callback(null, { statusCode });
         }),
       },
-      indices: { create: jest.fn(() => {}) },
+      indices: { create: jest.fn() },
     } as unknown) as elasticsearch.Client;
 
     gateway = new ElasticsearchGateway({
       client,
       indexName,
       logger: new NoOpLogger(),
+    });
+  });
+
+  describe('#getByDocumentId', () => {
+    it('retrieves the metadata from Elasticsearch using the document id', async () => {
+      const document = await gateway.getByDocumentId(metadata.documentId);
+      expect(document).toStrictEqual(metadata);
+    });
+
+    it('returns an error if the requested document could not be found', async () => {
+      (client.get as jest.Mock).mockImplementation(
+        jest.fn(() => Promise.resolve({
+          body: {
+            found: false
+          }
+        }))
+      );
+
+      await expect(
+        gateway.getByDocumentId(metadata.documentId)
+      ).rejects.toThrow();
     });
   });
 
@@ -83,8 +110,8 @@ describe('ElasticsearchGateway', () => {
           query: {
             bool: {
               must: [
-                { match: { documentId: 'gs523ad' } },
-                { match: { ey: 'value' } },
+                { terms: { documentId: ['gs523ad'] } },
+                { terms: { ey: ['value'] } },
               ],
             },
           },

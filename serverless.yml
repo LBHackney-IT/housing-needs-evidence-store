@@ -58,13 +58,12 @@ functions:
         - node_modules/**
     events:
       - http:
-          path: /
+          path: '{proxy+}'
           method: ANY
           authorizer: ${self:custom.authorizer.${self:service}-authorizer}
-      - http:
-          path: /{proxy+}
-          method: ANY
-          authorizer: ${self:custom.authorizer.${self:service}-authorizer}
+          cors:
+            origin: '*'
+            cacheControl: 'max-age=600, s-maxage=600, proxy-revalidate'
 
   hn-evidence-store-s3-upload:
     name: ${self:service}-${self:provider.stage}-indexer
@@ -106,17 +105,16 @@ resources:
           ServerSideEncryptionConfiguration:
             - ServerSideEncryptionByDefault:
                 SSEAlgorithm: AES256
-
     ElasticSearchInstance:
       Type: AWS::Elasticsearch::Domain
       Properties:
         EBSOptions:
           EBSEnabled: true
           VolumeType: gp2
-          VolumeSize: 10
+          VolumeSize: ${self:custom.elasticsearch.${self:provider.stage}.volumeSize}
         ElasticsearchClusterConfig:
-          InstanceType: t2.small.elasticsearch
-          InstanceCount: 1
+          InstanceType: ${self:custom.elasticsearch.${self:provider.stage}.instanceSize}
+          InstanceCount: ${self:custom.elasticsearch.${self:provider.stage}.instanceCount}
           DedicatedMasterEnabled: false
           ZoneAwarenessEnabled: false
         ElasticsearchVersion: 7.4
@@ -144,6 +142,7 @@ custom:
       resultTtlInSeconds: 0
   domains:
     base: evidence-store.api.hackney.gov.uk
+    test: test-${self:custom.domains.base}
     staging: staging-${self:custom.domains.base}
     prod: ${self:custom.domains.base}
   customDomain:
@@ -151,3 +150,16 @@ custom:
     basePath: ''
     certificateName: '*.api.hackney.gov.uk'
     createRoute53Record: false
+  elasticsearch:
+    test:
+      instanceSize: t2.small.elasticsearch
+      instanceCount: 1
+      volumeSize: 10
+    staging:
+      instanceSize: t2.small.elasticsearch
+      instanceCount: 1
+      volumeSize: 10
+    prod:
+      instanceSize: t2.small.elasticsearch
+      instanceCount: 1
+      volumeSize: 10

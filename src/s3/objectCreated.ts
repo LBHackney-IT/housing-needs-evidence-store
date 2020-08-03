@@ -8,29 +8,41 @@ interface HandlerDependencies {
   indexDocument: IndexDocument;
 }
 
+const decodeURI = (s: string) => decodeURIComponent(s.replace(/\+/g, '%20'));
 const isMetadataFile = (key: string) => key.endsWith('.json');
 const getDocumentIdFromKey = (key: string) => key.split('/')[0];
+const getFilenameFromKey = (key: string) => decodeURI(key.split('/').reverse()[0]);
 
 const createHandler: (container: Container) => S3Handler = ({
   logger,
-  indexDocument: indexer
+  indexDocument: indexer,
 }: HandlerDependencies) => {
   return async (event: S3CreateEvent, context) => {
-    logger.mergeContext({
-      records: event.Records.length,
-      awsRequestId: context.awsRequestId,
-    }).log('handling S3 trigger');
+    logger
+      .mergeContext({
+        records: event.Records.length,
+        awsRequestId: context.awsRequestId,
+      })
+      .log('handling S3 trigger');
 
     const { Records: records } = event;
 
     for (const record of records) {
-      const { s3: { object: { key } } } = record;
+      const {
+        s3: {
+          object: { key },
+        },
+      } = record;
       logger.mergeContext({ key, bucket: record.s3.bucket });
 
       if (!isMetadataFile(key)) {
         try {
           logger.log('indexing');
-          await indexer.execute({ documentId: getDocumentIdFromKey(key) });
+          await indexer.execute({
+            documentId: getDocumentIdFromKey(key),
+            filename: getFilenameFromKey(key),
+            objectKey: decodeURI(key),
+          });
           logger.log('successfully indexed');
         } catch (err) {
           logger.error(err);
@@ -40,7 +52,7 @@ const createHandler: (container: Container) => S3Handler = ({
       }
     }
   };
-}
+};
 
 const handler = createHandler(dependencies);
 export { handler, createHandler };

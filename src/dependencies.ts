@@ -8,8 +8,10 @@ import {
   GetMetadata,
   SaveMetadata,
   FindDocuments,
+  CreateDownloadUrl,
 } from './use-cases';
 import { createAWSConnection, awsCredsifyAll } from '@acuris/aws-es-connection';
+import GetIndexedMetadataUseCase from './use-cases/GetIndexedMetadata';
 
 export interface Container {
   logger: Logger;
@@ -86,8 +88,20 @@ class DefaultContainer implements Container {
 
   get findDocuments() {
     return new FindDocuments({
-      logger: this.logger,
       elasticsearchGateway: this.elasticsearchGateway,
+    });
+  }
+
+  get getIndexedMetadata() {
+    return new GetIndexedMetadataUseCase({
+      elasticsearchGateway: this.elasticsearchGateway,
+    });
+  }
+
+  get createDownloadUrl() {
+    return new CreateDownloadUrl({
+      logger: this.logger,
+      s3Gateway: this.s3Gateway,
     });
   }
 }

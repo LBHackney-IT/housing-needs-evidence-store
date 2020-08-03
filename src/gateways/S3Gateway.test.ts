@@ -14,6 +14,9 @@ describe('S3Gateway', () => {
           },
         })
       ),
+      getSignedUrlPromise: jest.fn(() => Promise.resolve(
+        'https://s3.eu-west-2.amazonaws.com/bucket/filename.txt'
+      )),
     };
   });
 
@@ -33,7 +36,7 @@ describe('S3Gateway', () => {
     const s3Gateway = new S3Gateway({
       logger: new NoOpLogger(),
       client,
-      bucketName: 'testBucket'
+      bucketName: 'testBucket',
     });
 
     const result = await s3Gateway.create(metadata);
@@ -52,11 +55,32 @@ describe('S3Gateway', () => {
     const s3Gateway = new S3Gateway({
       logger: new NoOpLogger(),
       client,
-      bucketName: 'testBucket'
+      bucketName: 'testBucket',
     });
 
     const result = await s3Gateway.createUrl('123');
     expect(result).toStrictEqual(expectedData);
+  });
+
+  it('sets the correct policy conditions on the upload URL', async () => {
+    const documentId = '123';
+    const s3Gateway = new S3Gateway({
+      logger: new NoOpLogger(),
+      client,
+      bucketName: 'testBucket'
+    });
+
+    await s3Gateway.createUrl(documentId);
+    expect(client.createPresignedPost).toHaveBeenCalledWith(
+      expect.objectContaining({
+        Conditions: expect.arrayContaining([
+          ['starts-with', '$key', `${documentId}/`],
+          { 'X-Amz-Server-Side-Encryption': 'AES256' },
+          ['starts-with', '$X-Amz-Meta-Description', ''],
+        ])
+      }),
+      expect.any(Function)
+    );
   });
 
   it('can get a document by id', async () => {
@@ -76,10 +100,52 @@ describe('S3Gateway', () => {
     const s3Gateway = new S3Gateway({
       logger: new NoOpLogger(),
       client,
-      bucketName: 'testBucket'
+      bucketName: 'testBucket',
     });
 
     const result = await s3Gateway.get(documentId);
     expect(result).toStrictEqual(expectedDocument);
+  });
+
+  it('creates a signed download url', async () => {
+    const gateway = new S3Gateway({
+      logger: new NoOpLogger(),
+      client,
+      bucketName: 'bucket'
+    });
+
+    const signedUrl = await gateway.createDownloadUrl('bucket/filename.txt', 30);
+
+    expect(client.getSignedUrlPromise).toHaveBeenCalledWith('getObject', {
+      Bucket: 'bucket',
+      Key: 'bucket/filename.txt',
+      Expires: 30
+    });
+
+    expect(signedUrl).toBe(
+      'https://s3.eu-west-2.amazonaws.com/bucket/filename.txt'
+    );
+  });
+
+  it('can get metadata from S3 object', async () => {
+    const expectedObject = {
+      description: "My passport"
+    }
+
+    client.headObject = jest.fn(() => ({
+      promise: () =>
+        Promise.resolve({
+          Metadata: expectedObject,
+        }),
+    }));
+
+    const gateway = new S3Gateway({
+      logger: new NoOpLogger(),
+      client,
+      bucketName: 'testBucket'
+    });
+
+    const result = await gateway.getObjectMetadata('123/Passport.jpg');
+    expect(result).toStrictEqual(expectedObject);
   });
 });
