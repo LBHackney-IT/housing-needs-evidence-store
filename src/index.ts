@@ -1,5 +1,5 @@
 import fastify from 'fastify';
-import { health, saveMetadata, getMetadata, findDocuments } from './routes';
+import { health, saveMetadata, getMetadata, findDocuments, getDocumentContents } from './routes';
 
 const app = fastify();
 
@@ -11,6 +11,7 @@ app.route(health);
 app.route(saveMetadata);
 app.route(getMetadata);
 app.route(findDocuments);
+app.route(getDocumentContents);
 
 if (require.main === module) {
   app.listen(5050, (err, address) => {
