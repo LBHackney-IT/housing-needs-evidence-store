@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk';
 import { nanoid } from 'nanoid';
-import elasticsearch from '@elastic/elasticsearch';
+import * as elasticsearch from '@elastic/elasticsearch';
 import { console, Logger } from './logging';
 import { S3Gateway, ElasticsearchGateway } from './gateways';
 import {
@@ -10,8 +10,8 @@ import {
   FindDocuments,
   CreateDownloadUrl,
 } from './use-cases';
-import { createAWSConnection, awsCredsifyAll } from '@acuris/aws-es-connection';
 import GetIndexedMetadataUseCase from './use-cases/GetIndexedMetadata';
+import { createAWSConnection, awsCredsifyAll } from '@acuris/aws-es-connection';
 
 export interface Container {
   logger: Logger;
