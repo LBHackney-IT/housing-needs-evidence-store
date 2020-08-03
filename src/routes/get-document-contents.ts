@@ -1,4 +1,3 @@
-import dependencies from '../dependencies';
 import { RouteOptions } from 'fastify';
 import { GetIndexedMetadata, CreateDownloadUrl } from '../use-cases';
 import { Logger } from '../logging';
@@ -36,12 +35,6 @@ const createEndpoint = ({
       reply.status(400).send();
     }
   },
-});
-
-export default createEndpoint({
-  logger: dependencies.logger,
-  getMetadata: dependencies.getIndexedMetadata,
-  createDownloadUrl: dependencies.createDownloadUrl,
 });
 
 export { createEndpoint };
