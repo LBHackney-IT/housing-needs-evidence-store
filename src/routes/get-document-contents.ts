@@ -1,20 +1,13 @@
 import dependencies from '../dependencies';
-import { FastifyRequest, RouteOptions, DefaultQuery } from 'fastify';
-import { IncomingMessage } from 'http';
-import { GetMetadata, CreateDownloadUrl } from '../use-cases';
+import { RouteOptions } from 'fastify';
+import { GetIndexedMetadata, CreateDownloadUrl } from '../use-cases';
 import { Logger } from '../logging';
 
 interface EndpointDependencies {
   logger: Logger;
-  getMetadata: GetMetadata;
+  getMetadata: GetIndexedMetadata;
   createDownloadUrl: CreateDownloadUrl;
 }
-
-interface Params {
-  documentId: string;
-}
-
-type Request = FastifyRequest<IncomingMessage, DefaultQuery, Params>;
 
 const createEndpoint = ({
   logger,
@@ -23,9 +16,9 @@ const createEndpoint = ({
 }: EndpointDependencies): RouteOptions => ({
   method: 'GET',
   url: '/:documentId/contents',
-  handler: async (req: Request, reply) => {
+  handler: async (req, reply) => {
     const { documentId, filename } = await getMetadata.execute({
-      documentId: req.params.documentId,
+      documentId: req.params['documentId'],
     });
 
     logger.mergeContext({ documentId, filename });
@@ -47,7 +40,7 @@ const createEndpoint = ({
 
 export default createEndpoint({
   logger: dependencies.logger,
-  getMetadata: dependencies.getMetadata,
+  getMetadata: dependencies.getIndexedMetadata,
   createDownloadUrl: dependencies.createDownloadUrl,
 });
 
