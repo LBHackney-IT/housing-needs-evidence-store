@@ -11,6 +11,7 @@ import {
   CreateDownloadUrl,
   GetIndexedMetadata,
 } from './use-cases';
+import { createAWSConnection, awsCredsifyAll } from '@acuris/aws-es-connection';
 
 export interface Container {
   logger: Logger;
@@ -68,9 +69,14 @@ class DefaultContainer implements Container {
   }
 
   get elasticsearch() {
-    return new elasticsearch.Client({
-      node: this.configuration.esClientEndpoint,
-    });
+    return awsCredsifyAll(
+      new elasticsearch.Client({
+        node: this.configuration.esClientEndpoint,
+        Connection: createAWSConnection(
+          AWS.config.credentials as AWS.Credentials
+        ),
+      })
+    );
   }
 
   get indexDocument() {

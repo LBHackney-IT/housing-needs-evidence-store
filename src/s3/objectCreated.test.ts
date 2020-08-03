@@ -43,4 +43,20 @@ describe('ObjectCreated handler', () => {
       })
     );
   });
+
+  it('decodes URI encoded keys', async () => {
+    await handler(
+      createS3Event('abcd12345/my+document+with+spaces.jpg'),
+      createMockContext(),
+      jest.fn()
+    );
+
+    expect(dependencies.indexDocument.execute).toHaveBeenCalledWith(
+      expect.objectContaining({
+        documentId: 'abcd12345',
+        filename: 'my document with spaces.jpg',
+        objectKey: 'abcd12345/my document with spaces.jpg'
+      })
+    );
+  });
 });

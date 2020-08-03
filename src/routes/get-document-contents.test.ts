@@ -1,6 +1,6 @@
 import fastify from 'fastify';
 import { createEndpoint } from './get-document-contents';
-import { GetMetadata, CreateDownloadUrl } from '../use-cases';
+import { GetIndexedMetadata, CreateDownloadUrl } from '../use-cases';
 import { NoOpLogger } from '../logging/NoOpLogger';
 
 describe('GET /{documentId}/contents', () => {
@@ -15,7 +15,7 @@ describe('GET /{documentId}/contents', () => {
 
   const getMetadata = ({
     execute: jest.fn(() => expectedMetadataResponse),
-  } as unknown) as GetMetadata;
+  } as unknown) as GetIndexedMetadata;
 
   const createDownloadUrl = ({
     execute: jest.fn(() => expectedDownloadRepsonse),
