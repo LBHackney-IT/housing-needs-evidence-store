@@ -6,6 +6,8 @@ describe('S3Gateway', () => {
   beforeEach(() => {
     client = {
       putObject: jest.fn(() => ({ promise: jest.fn() })),
+      listObjects: jest.fn(() => ({ promise: jest.fn() })),
+      deleteObjects: jest.fn(() => ({ promise: jest.fn() })),
       createPresignedPost: jest.fn((options, callback) =>
         callback(null, {
           url: 'https://s3.eu-west-2.amazonaws.com/bucketName',
@@ -130,6 +132,62 @@ describe('S3Gateway', () => {
     expect(signedUrl).toBe(
       'https://s3.eu-west-2.amazonaws.com/bucket/filename.txt'
     );
+  });
+
+  describe('#deleteByDocumentId', () => {
+    describe('when there are no objects in the bucket', () => {
+      beforeEach(() => {
+        client.listObjects.mockImplementation(() => ({
+          promise: jest.fn(() => ({
+            Contents: []
+          }))
+        }));
+      });
+
+      it('succeeds but does nothing', async () => {
+        const gateway = new S3Gateway({
+          client,
+          bucketName: 'Bucket',
+          logger: new NoOpLogger(),
+        });
+
+        await gateway.deleteByDocumentId('aswhd8');
+        expect(client.deleteObjects).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('when there are objects in the bucket', () => {
+    beforeEach(() => {
+      client.listObjects.mockImplementation(() => ({
+        promise: jest.fn(() => ({
+          Contents: [
+            { Key: 'aswhd8/metadata.json' },
+            { Key: 'aswhd8/cat.jpg' }
+          ]
+        }))
+      }));
+    })
+
+    it('removes all objects prefixed with the document id', async () => {
+      const gateway = new S3Gateway({
+        client,
+        bucketName: 'Bucket',
+        logger: new NoOpLogger(),
+      });
+
+      await gateway.deleteByDocumentId('aswhd8');
+
+      expect(client.deleteObjects).toHaveBeenCalledWith({
+        Bucket: 'Bucket',
+        Delete: {
+          Objects: [
+            { Key: 'aswhd8/metadata.json' },
+            { Key: 'aswhd8/cat.jpg' }
+          ]
+        },
+      });
+    });
   });
 
   it('can get metadata from S3 object', async () => {
