@@ -74,6 +74,37 @@ export class S3Gateway {
     return JSON.parse(object.Body.toString());
   }
 
+  async deleteByDocumentId(documentId: string): Promise<void> {
+    this.logger
+      .mergeContext({ documentId })
+      .log('[s3] removing all objects associated with id');
+
+    const listing = await this.client.listObjects({
+      Bucket: this.bucketName,
+      Prefix: `${documentId}/`,
+      MaxKeys: 2, // safeguard against bad prefixes
+    }).promise();
+
+    this.logger
+      .mergeContext({
+        bucketPrefix: listing.Prefix,
+        matchesFoundInBucket: (listing.Contents || []).length,
+      }).log('[s3] found objects in bucket with prefix');
+
+    const keys = listing.Contents.map(object => object.Key);
+
+    if (keys.length > 0) {
+      await this.client.deleteObjects({
+        Bucket: this.bucketName,
+        Delete: {
+          Objects: keys.map(key => ({ Key: key }))
+        }
+      }).promise();
+    }
+
+    this.logger.log('[s3] deleted objects in bucket');
+  }
+
   async createDownloadUrl(key: string, expiresIn: number): Promise<string> {
     this.logger
       .mergeContext({

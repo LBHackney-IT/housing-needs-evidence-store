@@ -38,6 +38,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/metadata"
+    delete:
+      operationId: delete-document
+      summary: Deletes a document and associated metadata using the id
+      parameters:
+        - $ref: "#/components/parameters/documentId"
+      responses:
+        204:
+          description: OK
   /{documentId}/contents:
     get:
       operationId: get-document-contents

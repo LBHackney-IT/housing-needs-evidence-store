@@ -10,6 +10,7 @@ import {
   FindDocuments,
   CreateDownloadUrl,
   GetIndexedMetadata,
+  DeleteDocument,
 } from './use-cases';
 import { createAWSConnection, awsCredsifyAll } from '@acuris/aws-es-connection';
 
@@ -103,6 +104,14 @@ class DefaultContainer implements Container {
     return new CreateDownloadUrl({
       logger: this.logger,
       s3Gateway: this.s3Gateway,
+    });
+  }
+
+  get deleteDocument() {
+    return new DeleteDocument({
+      logger: this.logger,
+      s3Gateway: this.s3Gateway,
+      elasticsearchGateway: this.elasticsearchGateway,
     });
   }
 }

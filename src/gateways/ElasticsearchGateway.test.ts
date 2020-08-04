@@ -41,6 +41,11 @@ describe('ElasticsearchGateway', () => {
           },
         })
       ),
+      delete: jest.fn(() => Promise.resolve({
+        body: {
+          result: "deleted"
+        }
+      })),
       search: jest.fn(() => Promise.resolve(elasticSearchResponse)),
       cat: {
         indices: jest.fn((index, callback) => {
@@ -101,6 +106,33 @@ describe('ElasticsearchGateway', () => {
         });
 
         await expect(gateway.index(metadata)).rejects.toThrow(error);
+      });
+    });
+  });
+
+  describe('#deleteByDocumentId', () => {
+    it('deletes from the Elasticsearch index', async () => {
+      await gateway.deleteByDocumentId(metadata.documentId);
+
+      expect(client.delete).toHaveBeenCalledWith(
+        expect.objectContaining({
+          index: indexName,
+          id: metadata.documentId,
+        })
+      );
+    });
+
+    describe('when there is an error', () => {
+      const error = new Error('Failed to delete');
+
+      it('bubbles up errors', async () => {
+        (client.delete as jest.Mock).mockImplementation(() => {
+          throw error;
+        });
+
+        await expect(
+          gateway.deleteByDocumentId(metadata.documentId)
+        ).rejects.toThrow(error);
       });
     });
   });
