@@ -114,10 +114,12 @@ describe('ElasticsearchGateway', () => {
     it('deletes from the Elasticsearch index', async () => {
       await gateway.deleteByDocumentId(metadata.documentId);
 
-      expect(client.delete).toHaveBeenCalledWith({
-        index: indexName,
-        id: metadata.documentId,
-      });
+      expect(client.delete).toHaveBeenCalledWith(
+        expect.objectContaining({
+          index: indexName,
+          id: metadata.documentId,
+        })
+      );
     });
 
     describe('when there is an error', () => {

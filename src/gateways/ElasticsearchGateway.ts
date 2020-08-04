@@ -90,14 +90,24 @@ export class ElasticsearchGateway {
       })
       .log('[elasticsearch] deleting document metadata');
 
-    const response = await this.client.delete({
-      id: documentId,
-      index: this.indexName,
-    });
+    try {
+      const response = await this.client.delete({
+        id: documentId,
+        index: this.indexName,
+      });
 
-    this.logger
-      .mergeContext({ esDeleteResponse: response })
-      .log('[elasticsearch] delete completed');
+      this.logger
+        .mergeContext({ esDeleteResponse: response })
+        .log('[elasticsearch] delete completed');
+    } catch (err) {
+      this.logger.error(err);
+
+      if (err.meta && err.meta.statusCode === 404) {
+        this.logger.log('ignoring 404, already deleted');
+      } else {
+        throw err;
+      }
+    }
   }
 
   async findDocuments({
