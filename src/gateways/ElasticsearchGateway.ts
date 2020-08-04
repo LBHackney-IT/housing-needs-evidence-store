@@ -82,6 +82,24 @@ export class ElasticsearchGateway {
     return metadata.body._source;
   }
 
+  async deleteByDocumentId(documentId: string): Promise<void> {
+    this.logger
+      .mergeContext({
+        indexName: this.indexName,
+        documentId,
+      })
+      .log('[elasticsearch] deleting document metadata');
+
+    const response = await this.client.delete({
+      id: documentId,
+      index: this.indexName,
+    });
+
+    this.logger
+      .mergeContext({ esDeleteResponse: response })
+      .log('[elasticsearch] delete completed');
+  }
+
   async findDocuments({
     metadata,
   }: FindDocumentMetadata): Promise<ElasticsearchDocumentMetadata[]> {
