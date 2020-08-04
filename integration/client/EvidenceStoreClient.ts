@@ -37,14 +37,24 @@ class EvidenceStoreClient {
       body: body ?? '<<not set>>',
     }, undefined, 2));
 
+    const buildRequestHeaders = () => {
+      const headers = {
+        accept: 'application/json',
+        'authorization': `Bearer ${this.authorizationToken}`
+      };
+
+      if (body) {
+        // Content-Type must _not_ be set without a body.
+        headers['content-type'] = 'application/json';
+      }
+
+      return headers;
+    }
+
     const response = await fetch(requestUrl, {
       method,
       body: JSON.stringify(body),
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-        'authorization': `Bearer ${this.authorizationToken}`
-      },
+      headers: buildRequestHeaders(),
     });
 
     let responseBody = null;
