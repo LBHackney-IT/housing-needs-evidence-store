@@ -45,6 +45,14 @@ paths:
         Gets the contents of a document from S3 using the document id
       parameters:
         - $ref: "#/components/parameters/documentId"
+        - name: redirect
+          in: query
+          required: false
+          description: >
+            Whether or not to redirect to the secure download URL or not,
+            defaults to true. If set to false, returns a 200 instead.
+          schema:
+            type: boolean
       responses:
         302:
           description: Found
@@ -53,6 +61,17 @@ paths:
               schema:
                 type: string
               description: The location of the document contents
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  downloadUrl:
+                    type: string
+                    description: The secure temporary download URL for the contents
+                    example: "https://very.secure.url/?token=temporary.one.time.token"
   /search:
     post:
       operationId: find-documents

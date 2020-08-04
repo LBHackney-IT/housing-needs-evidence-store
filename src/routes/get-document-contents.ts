@@ -18,8 +18,11 @@ const createEndpoint = ({
   method: 'GET',
   url: '/:documentId/contents',
   handler: async (req: Request, reply) => {
+    const redirect = (req.query['redirect'] || 'true') === 'true';
+    logger.mergeContext({ query: req.query, redirect });
+
     const { documentId, filename } = await getMetadata.execute({
-      documentId: req.params['documentId'],
+      documentId: req.params['documentId']
     });
 
     logger.mergeContext({ documentId, filename });
@@ -30,8 +33,13 @@ const createEndpoint = ({
         documentId,
       });
 
-      logger.log('redirecting to download url');
-      reply.redirect(302, downloadUrl);
+      if (redirect) {
+        logger.log('redirecting to download url');
+        return reply.redirect(302, downloadUrl);
+      }
+
+      logger.log('redirect not requested, returning download url');
+      reply.status(200).send({ downloadUrl });
     } else {
       logger.log('no filename set in metadata');
       reply.status(400).send();

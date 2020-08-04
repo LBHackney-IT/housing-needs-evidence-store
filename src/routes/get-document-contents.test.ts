@@ -41,4 +41,17 @@ describe('GET /{documentId}/contents', () => {
       expectedDownloadRepsonse.downloadUrl
     );
   });
+
+  it('returns the expected download URL if redirect is not requested', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/ahw82u/contents',
+      query: { redirect: 'false' }
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toStrictEqual(
+      JSON.stringify(expectedDownloadRepsonse)
+    );
+  });
 });
