@@ -76,6 +76,10 @@ class EvidenceStoreClient {
   getMetadata(documentId: string): Promise<Response> {
     return this.request({ method: 'GET', path: `/${documentId}` });
   }
+
+  deleteByDocumentId(documentId: string): Promise<Response> {
+    return this.request({ method: 'DELETE', path: `/${documentId}` });
+  }
 }
 
 export default EvidenceStoreClient;
