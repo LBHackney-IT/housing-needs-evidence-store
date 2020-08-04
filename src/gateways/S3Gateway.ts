@@ -1,4 +1,4 @@
-import AWS from 'aws-sdk';
+import * as AWS from 'aws-sdk';
 import { DocumentMetadata } from '../domain';
 import { Logger } from '../logging';
 
@@ -46,7 +46,7 @@ export class S3Gateway {
             { bucket: this.bucketName },
             ['starts-with', '$key', `${documentId}/`],
             { 'X-Amz-Server-Side-Encryption': 'AES256' },
-            ['starts-with', '$X-Amz-Meta-Description', '']
+            ['starts-with', '$X-Amz-Meta-Description', ''],
           ],
         },
         (err, data) => {
@@ -75,15 +75,17 @@ export class S3Gateway {
   }
 
   async createDownloadUrl(key: string, expiresIn: number): Promise<string> {
-    this.logger.mergeContext({
-      key,
-      expiresIn
-    }).log('creating S3 signed url');
+    this.logger
+      .mergeContext({
+        key,
+        expiresIn,
+      })
+      .log('creating S3 signed url');
 
     return await this.client.getSignedUrlPromise('getObject', {
       Bucket: this.bucketName,
       Key: key,
-      Expires: expiresIn
+      Expires: expiresIn,
     });
   }
 
@@ -91,7 +93,7 @@ export class S3Gateway {
     const metadata = await this.client
       .headObject({
         Bucket: this.bucketName,
-        Key: key
+        Key: key,
       })
       .promise();
 

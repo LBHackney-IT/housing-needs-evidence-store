@@ -1,8 +1,10 @@
-import { DocumentMetadata } from '../domain';
-import UnknownDocumentError from '../domain/UnknownDocumentError';
-import elasticsearch from '@elastic/elasticsearch';
+import {
+  DocumentMetadata,
+  ElasticsearchDocumentMetadata,
+  UnknownDocumentError,
+} from '../domain';
+import * as elasticsearch from '@elastic/elasticsearch';
 import { Logger } from '../logging';
-import { ElasticsearchDocumentsMetadata } from '../domain/ElasticsearchDocumentsMetadata';
 
 interface ElasticsearchGatewayDependencies {
   logger: Logger;
@@ -27,7 +29,7 @@ export class ElasticsearchGateway {
     this.createIndex();
   }
 
-  createIndex() {
+  createIndex(): void {
     this.client.cat.indices({ index: this.indexName }, (err, resp) => {
       if (resp.statusCode !== 200) {
         this.client.indices.create({ index: this.indexName }, (err, resp) => {
@@ -66,7 +68,7 @@ export class ElasticsearchGateway {
 
     const metadata = await this.client.get({
       id: documentId,
-      index: this.indexName
+      index: this.indexName,
     });
 
     this.logger
@@ -82,7 +84,7 @@ export class ElasticsearchGateway {
 
   async findDocuments({
     metadata,
-  }: FindDocumentMetadata): Promise<ElasticsearchDocumentsMetadata[]> {
+  }: FindDocumentMetadata): Promise<ElasticsearchDocumentMetadata[]> {
     this.logger
       .mergeContext({ indexName: this.indexName })
       .log('[elasticsearch] searching documents');
@@ -115,6 +117,6 @@ export class ElasticsearchGateway {
       };
     });
 
-    return { documents };
+    return documents;
   }
 }

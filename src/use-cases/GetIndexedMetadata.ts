@@ -10,14 +10,17 @@ interface GetIndexedMetadataQuery {
   documentId: string;
 }
 
-export default class GetIndexedMetadataUseCase implements UseCase<GetIndexedMetadataQuery, DocumentMetadata> {
+export default class GetIndexedMetadataUseCase
+  implements UseCase<GetIndexedMetadataQuery, DocumentMetadata> {
   es: ElasticsearchGateway;
 
   constructor({ elasticsearchGateway }: GetMetadataDependencies) {
     this.es = elasticsearchGateway;
   }
 
-  async execute({ documentId }: GetIndexedMetadataQuery): Promise<DocumentMetadata> {
+  async execute({
+    documentId,
+  }: GetIndexedMetadataQuery): Promise<DocumentMetadata> {
     const metadata = await this.es.getByDocumentId(documentId);
     return metadata;
   }

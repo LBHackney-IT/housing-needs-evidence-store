@@ -6,9 +6,6 @@
   "dependencies": {
     "@acuris/aws-es-connection": "^1.1.0",
     "@elastic/elasticsearch": "^7.8.0",
-    "@types/aws-lambda": "^8.10.58",
-    "@types/nanoid": "^2.1.0",
-    "@types/node": "^14.0.13",
     "aws-lambda-fastify": "^1.4.3",
     "dotenv": "^8.2.0",
     "fastify": "^3.1.1",
@@ -30,11 +27,13 @@
     "dotenv": "^8.2.0",
     "eslint": "^7.2.0",
     "husky": "^4.2.5",
+    "jest": "^26.1.0",
     "lint-staged": "^10.2.10",
     "node-fetch": "^2.6.0",
     "nodemon": "^2.0.4",
     "prettier": "^2.0.5",
-    "serverless": "^1.73.0"
+    "serverless": "^1.73.0",
+    "ts-jest": "^26.1.4"
   },
   "scripts": {
     "build": "rm -rf lib/ && uniformly build",

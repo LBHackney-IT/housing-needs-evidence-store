@@ -3,7 +3,7 @@ import { S3Gateway } from '../gateways';
 
 describe('Get Metadata Use Case', () => {
   const objectMetadata = {
-    description: 'My passport'
+    description: 'My passport',
   };
 
   const predfinedMetadata = {
@@ -14,22 +14,22 @@ describe('Get Metadata Use Case', () => {
 
   const expectedDocument = {
     ...objectMetadata,
-    ...predfinedMetadata
+    ...predfinedMetadata,
   };
 
   const usecase = new GetMetadata({
-    s3Gateway: {
+    s3Gateway: ({
       get: jest.fn(() => Promise.resolve(predfinedMetadata)),
-      getObjectMetadata: jest.fn(() => Promise.resolve(objectMetadata))
-    } as unknown as S3Gateway
+      getObjectMetadata: jest.fn(() => Promise.resolve(objectMetadata)),
+    } as unknown) as S3Gateway,
   });
 
   it('retrieves metadata from the S3 object', async () => {
     const result = await usecase.execute({
       documentId: expectedDocument.documentId,
-      objectKey: `${expectedDocument.documentId}/passport.jpg`
+      objectKey: `${expectedDocument.documentId}/passport.jpg`,
     });
 
     expect(result).toStrictEqual(expectedDocument);
-  })
+  });
 });

@@ -1,4 +1,4 @@
-import { RouteOptions } from 'fastify';
+import { FastifyRequest, RouteOptions } from 'fastify';
 import { GetIndexedMetadata, CreateDownloadUrl } from '../use-cases';
 import { Logger } from '../logging';
 
@@ -8,6 +8,8 @@ interface EndpointDependencies {
   createDownloadUrl: CreateDownloadUrl;
 }
 
+type Request = FastifyRequest;
+
 const createEndpoint = ({
   logger,
   getMetadata,
@@ -15,7 +17,7 @@ const createEndpoint = ({
 }: EndpointDependencies): RouteOptions => ({
   method: 'GET',
   url: '/:documentId/contents',
-  handler: async (req, reply) => {
+  handler: async (req: Request, reply) => {
     const { documentId, filename } = await getMetadata.execute({
       documentId: req.params['documentId'],
     });
@@ -25,7 +27,7 @@ const createEndpoint = ({
     if (filename && filename.length > 0) {
       const { downloadUrl } = await createDownloadUrl.execute({
         filename,
-        documentId
+        documentId,
       });
 
       logger.log('redirecting to download url');
