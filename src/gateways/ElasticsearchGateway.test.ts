@@ -115,8 +115,8 @@ describe('ElasticsearchGateway', () => {
           query: {
             bool: {
               must: [
-                { terms: { documentId: ['gs523ad'] } },
-                { terms: { ey: ['value'] } },
+                { match: { documentId: 'gs523ad' } },
+                { match: { ey: 'value' } },
               ],
             },
           },

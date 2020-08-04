@@ -89,9 +89,10 @@ export class ElasticsearchGateway {
       .mergeContext({ indexName: this.indexName })
       .log('[elasticsearch] searching documents');
 
-    const conditionsArray = Object.entries(metadata).map(([key, value]) => ({
-      terms: { [key]: Array.isArray(value) ? value : [value] },
-    }));
+    const conditionsArray = Object.entries(metadata).map(([key, value]) => {
+      const esKey = Array.isArray(value) ? 'terms' : 'match';
+      return { [esKey]: { [key]: value } };
+    });
 
     const query = {
       bool: {
@@ -108,7 +109,7 @@ export class ElasticsearchGateway {
 
     const documentHits = response.body.hits.hits;
 
-    const documents = documentHits.map((doc) => {
+    const documents = documentHits.map(doc => {
       return {
         documentId: doc._id,
         index: doc._index,
