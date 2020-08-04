@@ -1,4 +1,4 @@
-import AWS from 'aws-sdk';
+import * as AWS from 'aws-sdk';
 import { nanoid } from 'nanoid';
 import * as elasticsearch from '@elastic/elasticsearch';
 import { console, Logger } from './logging';
@@ -9,8 +9,8 @@ import {
   SaveMetadata,
   FindDocuments,
   CreateDownloadUrl,
+  GetIndexedMetadata,
 } from './use-cases';
-import GetIndexedMetadataUseCase from './use-cases/GetIndexedMetadata';
 import { createAWSConnection, awsCredsifyAll } from '@acuris/aws-es-connection';
 
 export interface Container {
@@ -23,6 +23,7 @@ export interface Container {
 export interface Configuration {
   esClientEndpoint: string;
   esDocumentsIndex: string;
+  bucketName: string;
 }
 
 class DefaultContainer implements Container {
@@ -93,7 +94,7 @@ class DefaultContainer implements Container {
   }
 
   get getIndexedMetadata() {
-    return new GetIndexedMetadataUseCase({
+    return new GetIndexedMetadata({
       elasticsearchGateway: this.elasticsearchGateway,
     });
   }

@@ -14,9 +14,11 @@ describe('S3Gateway', () => {
           },
         })
       ),
-      getSignedUrlPromise: jest.fn(() => Promise.resolve(
-        'https://s3.eu-west-2.amazonaws.com/bucket/filename.txt'
-      )),
+      getSignedUrlPromise: jest.fn(() =>
+        Promise.resolve(
+          'https://s3.eu-west-2.amazonaws.com/bucket/filename.txt'
+        )
+      ),
     };
   });
 
@@ -67,7 +69,7 @@ describe('S3Gateway', () => {
     const s3Gateway = new S3Gateway({
       logger: new NoOpLogger(),
       client,
-      bucketName: 'testBucket'
+      bucketName: 'testBucket',
     });
 
     await s3Gateway.createUrl(documentId);
@@ -77,7 +79,7 @@ describe('S3Gateway', () => {
           ['starts-with', '$key', `${documentId}/`],
           { 'X-Amz-Server-Side-Encryption': 'AES256' },
           ['starts-with', '$X-Amz-Meta-Description', ''],
-        ])
+        ]),
       }),
       expect.any(Function)
     );
@@ -111,15 +113,18 @@ describe('S3Gateway', () => {
     const gateway = new S3Gateway({
       logger: new NoOpLogger(),
       client,
-      bucketName: 'bucket'
+      bucketName: 'bucket',
     });
 
-    const signedUrl = await gateway.createDownloadUrl('bucket/filename.txt', 30);
+    const signedUrl = await gateway.createDownloadUrl(
+      'bucket/filename.txt',
+      30
+    );
 
     expect(client.getSignedUrlPromise).toHaveBeenCalledWith('getObject', {
       Bucket: 'bucket',
       Key: 'bucket/filename.txt',
-      Expires: 30
+      Expires: 30,
     });
 
     expect(signedUrl).toBe(
@@ -129,8 +134,8 @@ describe('S3Gateway', () => {
 
   it('can get metadata from S3 object', async () => {
     const expectedObject = {
-      description: "My passport"
-    }
+      description: 'My passport',
+    };
 
     client.headObject = jest.fn(() => ({
       promise: () =>
@@ -142,7 +147,7 @@ describe('S3Gateway', () => {
     const gateway = new S3Gateway({
       logger: new NoOpLogger(),
       client,
-      bucketName: 'testBucket'
+      bucketName: 'testBucket',
     });
 
     const result = await gateway.getObjectMetadata('123/Passport.jpg');

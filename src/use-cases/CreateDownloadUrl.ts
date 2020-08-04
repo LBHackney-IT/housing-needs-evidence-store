@@ -28,16 +28,19 @@ export default class CreateDownloadUrlUseCase
 
   async execute({
     filename,
-    documentId
+    documentId,
   }: CreateDownloadUrlCommand): Promise<CreateDownloadUrlResponse> {
-    this.logger.mergeContext({
-      filename,
-      documentId
-    }).log('creating temporary download url');
+    this.logger
+      .mergeContext({
+        filename,
+        documentId,
+      })
+      .log('creating temporary download url');
 
-    const downloadUrl = await this
-      .storage
-      .createDownloadUrl(`${documentId}/${filename}`, 300);
+    const downloadUrl = await this.storage.createDownloadUrl(
+      `${documentId}/${filename}`,
+      300
+    );
 
     return { downloadUrl };
   }
