@@ -88,7 +88,7 @@ export class S3Gateway {
     this.logger
       .mergeContext({
         bucketPrefix: listing.Prefix,
-        matchesFoundInBucket: listing.Contents?.length,
+        matchesFoundInBucket: (listing.Contents || []).length,
       }).log('[s3] found objects in bucket with prefix');
 
     const keys = listing.Contents.map(object => object.Key);
