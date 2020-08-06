@@ -1,9 +1,11 @@
 import { DocumentMetadata } from '../domain';
 import { S3Gateway } from '../gateways';
+import { ElasticsearchGateway } from '../gateways';
 import { UseCase } from './UseCase';
 
 interface SaveMetadataDependencies {
   s3Gateway: S3Gateway;
+  esGateway: ElasticsearchGateway;
   createDocumentId: () => string;
 }
 
@@ -21,20 +23,31 @@ interface SaveMetadataResult {
 export default class SaveMetadataUseCase
   implements UseCase<SaveMetadataCommand, SaveMetadataResult> {
   s3Gateway: S3Gateway;
+  esGateway: ElasticsearchGateway;
   createDocumentId: () => string;
 
-  constructor({ s3Gateway, createDocumentId }: SaveMetadataDependencies) {
+  constructor({
+    s3Gateway,
+    createDocumentId,
+    esGateway,
+  }: SaveMetadataDependencies) {
     this.s3Gateway = s3Gateway;
     this.createDocumentId = createDocumentId;
+    this.esGateway = esGateway;
   }
 
   async execute({
     metadata,
   }: SaveMetadataCommand): Promise<SaveMetadataResult> {
+    const documentId = this.createDocumentId();
+
     const created = await this.s3Gateway.create({
-      documentId: this.createDocumentId(),
+      documentId,
       ...metadata,
     });
+
+    const indexMetadata = Object.assign({}, metadata, { documentId });
+    await this.esGateway.index(indexMetadata as DocumentMetadata);
 
     const { url, fields } = await this.s3Gateway.createUrl(created.documentId);
 
