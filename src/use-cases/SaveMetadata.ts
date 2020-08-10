@@ -39,15 +39,12 @@ export default class SaveMetadataUseCase
   async execute({
     metadata,
   }: SaveMetadataCommand): Promise<SaveMetadataResult> {
-    const documentId = this.createDocumentId();
-
     const created = await this.s3Gateway.create({
-      documentId,
+      documentId: this.createDocumentId(),
       ...metadata,
     });
 
-    const indexMetadata = Object.assign({}, metadata, { documentId });
-    await this.esGateway.index(indexMetadata as DocumentMetadata);
+    await this.esGateway.index(created);
 
     const { url, fields } = await this.s3Gateway.createUrl(created.documentId);
 
