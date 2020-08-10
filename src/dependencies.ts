@@ -60,6 +60,7 @@ class DefaultContainer implements Container {
     return new SaveMetadata({
       s3Gateway: this.s3Gateway,
       createDocumentId: () => nanoid(6),
+      esGateway: this.elasticsearchGateway,
     });
   }
 
