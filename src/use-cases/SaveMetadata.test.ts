@@ -5,7 +5,9 @@ import { ElasticsearchGateway } from '../gateways';
 describe('Save Metadata Use Case', () => {
   const usecase = new SaveMetadata({
     s3Gateway: ({
-      create: jest.fn(() => Promise.resolve({ documentId: '123' })),
+      create: jest.fn((metadata) =>
+        Promise.resolve({ ...metadata, documentId: '123' })
+      ),
       createUrl: jest.fn(() =>
         Promise.resolve({
           url: 'https://s3.eu-west-2.amazonaws.com/bucketName',
