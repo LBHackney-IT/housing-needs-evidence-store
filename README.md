@@ -12,7 +12,11 @@ This project uses **npm** for dependency management.
     ```bash
     npm install
     ```
-2.  Start running your local copy of evidence store!
+2.  Set local environment variables, adjust as needed
+    ```bash
+    cp .env.sample .env
+    ```
+3.  Start running your local copy of evidence store!
     ```bash
     npm run dev
     ```
@@ -32,7 +36,7 @@ npm test:watch # runs all unit tests, in watch mode
 npm run test:integration
 ```
 
-By default integration tests will run against the local version of evidence store, you can configure this to run against any URL by setting an environment variable before running the tests.
+By default integration tests will run against the local version of evidence store, you can configure this to run against any URL by setting an environment variable before running the tests. If you are running tests against a real instance, you must also set `INTEGRATION_TEST_JWT` to a valid Hackney-issued JWT with appropriate permissions.
 
 ```bash
 export INTEGRATION_TEST_BASE_URL=https://my.evidence.store/test
@@ -40,6 +44,10 @@ npm run test:integration
 ```
 
 ## Deployment
+
+### A note about running this project locally
+
+A key aspect of Evidence Store functionality is automatically indexing documents after they have been uploaded, this relies on an S3 event triggering a Lambda and therefore is very hard to test locally. If you are working on this functionality you may find it a lot easier to do a temporary deployment to AWS to test this integration.
 
 ### Temporary personal deployments
 
@@ -52,6 +60,6 @@ npm run deploy:personal:cleanup # remember to remove it when you're done!
 
 ### Automated deployments
 
-CircleCI will run unit and integration tests when a new PR is opened, these do not test the deployment of the application to AWS. They run against local copy of the application running in the CircleCI job instead.
+CircleCI will run unit and integration tests when a new PR is opened, these tests run against a test deployment of the application. This test environment is shared and therefore test runs will be queued when there are multiple PRs open at the same time to avoid conflicting deployments occurring.
 
 Merging into `master` triggers a new deployment to staging, there is a manual approval process in CircleCI to trigger deployment to production.
