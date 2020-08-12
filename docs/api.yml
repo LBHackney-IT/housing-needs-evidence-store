@@ -1,4 +1,4 @@
-openapi: "3.0.0"
+openapi: '3.0.0'
 info:
   title: Evidence Store API
   version: 1.0.0
@@ -6,7 +6,7 @@ paths:
   /metadata:
     post:
       operationId: save-metadata
-      summary: Saves metadata to S3 bucket
+      summary: Saves metadata to a S3 bucket and returns a pre-signed POST url
       requestBody:
         content:
           application/json:
@@ -18,31 +18,31 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/metadata"
+                $ref: '#/components/schemas/metadata'
               example:
                 {
-                  "documentId": "kjsak2",
-                  "firstName": "The name",
-                  "dob": "1999-01-01",
+                  'documentId': 'abc123',
+                  'url': 'https://s3.eu-west-2.amazonaws.com/bucket/abc123',
+                  'fields': { 'X-Amz-Algorithm': 'AWS4-HMAC-SHA256' },
                 }
   /{documentId}:
     get:
       operationId: get-metadata
       summary: Gets a document from S3 using the document id
       parameters:
-        - $ref: "#/components/parameters/documentId"
+        - $ref: '#/components/parameters/documentId'
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/metadata"
+                $ref: '#/components/schemas/metadata'
     delete:
       operationId: delete-document
       summary: Deletes a document and associated metadata using the id
       parameters:
-        - $ref: "#/components/parameters/documentId"
+        - $ref: '#/components/parameters/documentId'
       responses:
         204:
           description: OK
@@ -52,7 +52,7 @@ paths:
       summary: >
         Gets the contents of a document from S3 using the document id
       parameters:
-        - $ref: "#/components/parameters/documentId"
+        - $ref: '#/components/parameters/documentId'
         - name: redirect
           in: query
           required: false
@@ -79,7 +79,26 @@ paths:
                   downloadUrl:
                     type: string
                     description: The secure temporary download URL for the contents
-                    example: "https://very.secure.url/?token=temporary.one.time.token"
+                    example: 'https://very.secure.url/?token=temporary.one.time.token'
+  /{documentId}/upload-url:
+    get:
+      operationId: get-upload-url
+      summary: Gets the presigned POST url of an existing document folder
+      parameters:
+        - $ref: '#/components/parameters/documentId'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/metadata'
+              example:
+                {
+                  'documentId': 'abc123',
+                  'url': 'https://s3.eu-west-2.amazonaws.com/bucket/abc123',
+                  'fields': { 'X-Amz-Algorithm': 'AWS4-HMAC-SHA256' },
+                }
   /search:
     post:
       operationId: find-documents
@@ -89,7 +108,7 @@ paths:
           application/json:
             schema:
               type: object
-              example: { "firstName": "Toaster", "dob": "1999-01-01" }
+              example: { 'firstName': 'Toaster', 'dob': '1999-01-01' }
       responses:
         200:
           description: Documents
@@ -97,21 +116,21 @@ paths:
             application/json:
               example:
                 {
-                  "documents":
+                  'documents':
                     [
                       {
-                        "documentId": "1",
-                        "index": "documents",
-                        "score": 0.3,
-                        "metadata":
-                          { "firstName": "Toaster", "dob": "1999-01-01" },
+                        'documentId': '1',
+                        'index': 'documents',
+                        'score': 0.3,
+                        'metadata':
+                          { 'firstName': 'Toaster', 'dob': '1999-01-01' },
                       },
                       {
-                        "documentId": "2",
-                        "index": "documents",
-                        "score": 0.5,
-                        "metadata":
-                          { "firstName": "Toaster", "dob": "1999-01-01" },
+                        'documentId': '2',
+                        'index': 'documents',
+                        'score': 0.5,
+                        'metadata':
+                          { 'firstName': 'Toaster', 'dob': '1999-01-01' },
                       },
                     ],
                 }

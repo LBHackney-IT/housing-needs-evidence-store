@@ -6,6 +6,7 @@ import {
   getMetadata,
   health,
   saveMetadata,
+  getPresignedUploadUrl,
 } from './routes';
 
 const app = fastify();
@@ -20,6 +21,7 @@ app.route(getMetadata);
 app.route(findDocuments);
 app.route(getDocumentContents);
 app.route(deleteDocument);
+app.route(getPresignedUploadUrl);
 
 if (require.main === module) {
   app.listen(5050, (err, address) => {

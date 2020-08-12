@@ -11,6 +11,7 @@ import {
   CreateDownloadUrl,
   GetIndexedMetadata,
   DeleteDocument,
+  GetPresignedUploadUrl,
 } from './use-cases';
 import { createAWSConnection, awsCredsifyAll } from '@acuris/aws-es-connection';
 
@@ -113,6 +114,12 @@ class DefaultContainer implements Container {
       logger: this.logger,
       s3Gateway: this.s3Gateway,
       elasticsearchGateway: this.elasticsearchGateway,
+    });
+  }
+
+  get getPresignedUploadUrl() {
+    return new GetPresignedUploadUrl({
+      s3Gateway: this.s3Gateway,
     });
   }
 }
