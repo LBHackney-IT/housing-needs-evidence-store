@@ -130,6 +130,7 @@ export class ElasticsearchGateway {
 
     const response = await this.client.search({
       index: this.indexName,
+      size: 100,
       body: {
         query,
       },

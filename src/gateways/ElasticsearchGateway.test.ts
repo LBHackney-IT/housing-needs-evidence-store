@@ -143,6 +143,7 @@ describe('ElasticsearchGateway', () => {
 
       const expectedRequest = {
         index: indexName,
+        size: 100,
         body: {
           query: {
             bool: {
