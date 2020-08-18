@@ -28,8 +28,11 @@ describe('POST /search', () => {
       method: 'POST',
       url: '/search',
       payload: {
-        firstName: 'Tim',
-        lastName: 'Rose',
+        metadata: {
+          firstName: 'Tim',
+          lastName: 'Rose',
+        },
+        minimumMatchTerms: 1,
       },
     });
     expect(response.body).toStrictEqual(JSON.stringify(expectedResponse));
@@ -50,10 +53,7 @@ describe('POST /search', () => {
     const response = await app.inject({
       method: 'POST',
       url: '/search',
-      payload: {
-        firstName: 5,
-        lastName: 'Rose',
-      },
+      payload: { metadata: { firstName: 5, lastName: 'Rose' } },
     });
 
     expect(response.statusCode).toBe(400);
@@ -67,7 +67,7 @@ describe('POST /search', () => {
       method: 'POST',
       url: '/search',
       payload: {
-        lastName: ['Rose', 'Blue', { sneaky: 'object' }],
+        metadata: { lastName: ['Rose', 'Blue', { sneaky: 'object' }] },
       },
     });
 

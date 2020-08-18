@@ -108,7 +108,21 @@ paths:
           application/json:
             schema:
               type: object
-              example: { 'firstName': 'Toaster', 'dob': '1999-01-01' }
+              properties:
+                metadata:
+                  type: object
+                  description: metadata key/values to search
+                  required: true
+                minimumMatchTerms:
+                  type: integer
+                  description: minimum number of metadata values to match
+                  required: false
+                  default: 1
+              example:
+                {
+                  metadata: { 'firstName': 'Toaster', 'dob': '1999-01-01' },
+                  minimumMatchTerms: 2,
+                }
       responses:
         200:
           description: Documents

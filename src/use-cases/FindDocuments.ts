@@ -8,6 +8,7 @@ interface FindDocumentsDependencies {
 
 interface FindDocumentsCommand {
   metadata: Omit<DocumentMetadata, 'documentId'>;
+  minimumMatchTerms?: Number;
 }
 
 interface FindDocumentsResult {
@@ -24,10 +25,12 @@ export default class FindDocumentsUseCase
 
   async execute({
     metadata,
+    minimumMatchTerms,
   }: FindDocumentsCommand): Promise<FindDocumentsResult> {
     return {
       documents: await this.elasticsearchGateway.findDocuments({
         metadata,
+        minimumMatchTerms,
       }),
     };
   }

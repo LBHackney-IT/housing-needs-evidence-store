@@ -12,8 +12,9 @@ interface ElasticsearchGatewayDependencies {
   client: elasticsearch.Client;
 }
 
-interface FindDocumentMetadata {
+interface FindDocumentsCommand {
   metadata: Omit<DocumentMetadata, 'documentId'>;
+  minimumMatchTerms?: Number;
 }
 
 export class ElasticsearchGateway {
@@ -112,15 +113,19 @@ export class ElasticsearchGateway {
 
   async findDocuments({
     metadata,
-  }: FindDocumentMetadata): Promise<ElasticsearchDocumentMetadata[]> {
+    minimumMatchTerms,
+  }: FindDocumentsCommand): Promise<ElasticsearchDocumentMetadata[]> {
     this.logger
       .mergeContext({ indexName: this.indexName })
-      .log('[elasticsearch] search documents');
+      .log('[elasticsearch] find documents');
 
-    const conditionsArray = Object.entries(metadata).map(([key, value]) => {
-      const esKey = Array.isArray(value) ? 'terms' : 'match';
-      return { [esKey]: { [key]: value } };
-    });
+    const conditionsArray = Object.entries(metadata)
+      .map(([key, value]) => {
+        return Array.isArray(value)
+          ? value.map((v) => ({ match: { [key]: v } }))
+          : { match: { [key]: value } };
+      })
+      .flat();
 
     const searchParams = {
       index: this.indexName,
@@ -128,25 +133,22 @@ export class ElasticsearchGateway {
       body: {
         query: {
           bool: {
-            must: conditionsArray,
+            should: conditionsArray,
+            minimum_should_match: minimumMatchTerms ? minimumMatchTerms : 1,
           },
         },
       },
     };
-
-    this.logger
-      .mergeContext({ esSearchParams: searchParams })
-      .log('[elasticsearch] searching');
 
     const response = await this.client.search(searchParams);
 
     const documentHits = response.body.hits.hits;
 
     this.logger
-      .mergeContext({ esSearchResult: response })
-      .log('[elasticsearch] search complete');
+      .mergeContext({ esSearchResult: documentHits })
+      .log('[elasticsearch] find documents complete');
 
-    const documents = documentHits.map((doc) => {
+    return documentHits.map((doc) => {
       return {
         documentId: doc._id,
         index: doc._index,
@@ -154,7 +156,5 @@ export class ElasticsearchGateway {
         score: doc._score,
       };
     });
-
-    return documents;
   }
 }

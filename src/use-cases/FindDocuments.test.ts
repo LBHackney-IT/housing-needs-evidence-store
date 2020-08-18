@@ -6,10 +6,11 @@ describe('Find Documents Use Case', () => {
     { name: '123.jpeg', id: '123' },
     { name: '456.pdf', id: '456' },
   ];
+  const findDocuments = jest.fn(() => Promise.resolve(documents));
 
   const usecase = new FindDocuments({
     elasticsearchGateway: ({
-      findDocuments: jest.fn(() => Promise.resolve(documents)),
+      findDocuments,
     } as unknown) as ElasticsearchGateway,
   });
 
@@ -20,6 +21,19 @@ describe('Find Documents Use Case', () => {
       lastName: 'Jones',
     };
     const result = await usecase.execute({ metadata });
+    expect(findDocuments).toHaveBeenCalledWith({ metadata });
     expect(result).toEqual(expectedResult);
+  });
+
+  it('can request minimum matching terms', async () => {
+    const metadata = {
+      firstName: 'Tim',
+      lastName: 'Jones',
+    };
+    await usecase.execute({ metadata, minimumMatchTerms: 2 });
+    expect(findDocuments).toHaveBeenCalledWith({
+      metadata,
+      minimumMatchTerms: 2,
+    });
   });
 });
