@@ -39,7 +39,7 @@ export default class CreateDownloadUrlUseCase
 
     const downloadUrl = await this.storage.createDownloadUrl(
       `${documentId}/${filename}`,
-      300
+      900
     );
 
     return { downloadUrl };
