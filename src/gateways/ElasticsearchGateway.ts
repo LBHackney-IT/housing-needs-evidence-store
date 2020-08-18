@@ -115,30 +115,38 @@ export class ElasticsearchGateway {
   }: FindDocumentMetadata): Promise<ElasticsearchDocumentMetadata[]> {
     this.logger
       .mergeContext({ indexName: this.indexName })
-      .log('[elasticsearch] searching documents');
+      .log('[elasticsearch] search documents');
 
     const conditionsArray = Object.entries(metadata).map(([key, value]) => {
       const esKey = Array.isArray(value) ? 'terms' : 'match';
       return { [esKey]: { [key]: value } };
     });
 
-    const query = {
-      bool: {
-        must: conditionsArray,
-      },
-    };
-
-    const response = await this.client.search({
+    const searchParams = {
       index: this.indexName,
       size: 100,
       body: {
-        query,
+        query: {
+          bool: {
+            must: conditionsArray,
+          },
+        },
       },
-    });
+    };
+
+    this.logger
+      .mergeContext({ esSearchParams: searchParams })
+      .log('[elasticsearch] searching');
+
+    const response = await this.client.search(searchParams);
 
     const documentHits = response.body.hits.hits;
 
-    const documents = documentHits.map(doc => {
+    this.logger
+      .mergeContext({ esSearchResult: response })
+      .log('[elasticsearch] search complete');
+
+    const documents = documentHits.map((doc) => {
       return {
         documentId: doc._id,
         index: doc._index,
