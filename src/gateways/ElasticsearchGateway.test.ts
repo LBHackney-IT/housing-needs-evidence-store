@@ -41,11 +41,13 @@ describe('ElasticsearchGateway', () => {
           },
         })
       ),
-      delete: jest.fn(() => Promise.resolve({
-        body: {
-          result: "deleted"
-        }
-      })),
+      delete: jest.fn(() =>
+        Promise.resolve({
+          body: {
+            result: 'deleted',
+          },
+        })
+      ),
       search: jest.fn(() => Promise.resolve(elasticSearchResponse)),
       cat: {
         indices: jest.fn((index, callback) => {
@@ -139,18 +141,17 @@ describe('ElasticsearchGateway', () => {
 
   describe('#findDocument', () => {
     it('searches for document in elasticSearch using metadata', async () => {
-      const result = await gateway.findDocuments({ metadata });
-
       const expectedRequest = {
         index: indexName,
         size: 100,
         body: {
           query: {
             bool: {
-              must: [
+              should: [
                 { match: { documentId: 'gs523ad' } },
                 { match: { ey: 'value' } },
               ],
+              minimum_should_match: 1,
             },
           },
         },
@@ -175,8 +176,50 @@ describe('ElasticsearchGateway', () => {
         },
       ];
 
+      const result = await gateway.findDocuments({ metadata });
+
       expect(client.search).toHaveBeenCalledWith(expectedRequest);
       expect(result).toStrictEqual(expectedResponse);
+    });
+
+    it('flattens metadata arrays into multiple match terms', async () => {
+      const expectedRequest = {
+        index: indexName,
+        size: 100,
+        body: {
+          query: {
+            bool: {
+              should: [
+                { match: { documentId: 'doc1' } },
+                { match: { data: 'data1' } },
+                { match: { data: 'data2' } },
+              ],
+              minimum_should_match: 1,
+            },
+          },
+        },
+      };
+
+      await gateway.findDocuments({
+        metadata: { documentId: 'doc1', data: ['data1', 'data2'] },
+      });
+
+      expect(client.search).toHaveBeenCalledWith(expectedRequest);
+    });
+
+    it('can set a minumum number of match terms', async () => {
+      const expectedRequest = expect.objectContaining({
+        body: {
+          query: { bool: expect.objectContaining({ minimum_should_match: 2 }) },
+        },
+      });
+
+      await gateway.findDocuments({
+        metadata: { data: ['data1', 'data2'] },
+        minimumMatchTerms: 2,
+      });
+
+      expect(client.search).toHaveBeenCalledWith(expectedRequest);
     });
 
     describe('when there is an error', () => {

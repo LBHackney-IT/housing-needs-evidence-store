@@ -19,7 +19,7 @@ const createEndpoint = ({
   method: 'POST',
   url: '/search',
   handler: async (req, reply) => {
-    const metadata = req.body;
+    const metadata = req.body['metadata'];
 
     for (const value of Object.values(metadata)) {
       if (!isStringOrArray(value)) {
@@ -31,7 +31,10 @@ const createEndpoint = ({
       }
     }
 
-    const result = await findDocuments.execute({ metadata: req.body });
+    const result = await findDocuments.execute({
+      metadata,
+      minimumMatchTerms: req.body['minimumMatchTerms'],
+    });
     reply.status(200).send(result);
   },
 });
