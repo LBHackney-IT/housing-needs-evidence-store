@@ -14,6 +14,7 @@ interface IndexDocumentCommand {
   documentId: string;
   filename: string;
   objectKey: string;
+  uploadedDate: Date;
 }
 
 export default class IndexDocumentUseCase
@@ -36,9 +37,10 @@ export default class IndexDocumentUseCase
     documentId,
     filename,
     objectKey,
+    uploadedDate,
   }: IndexDocumentCommand): Promise<void> {
     this.logger
-      .mergeContext({ documentId, filename, objectKey })
+      .mergeContext({ documentId, filename, objectKey, uploadedDate })
       .log('indexing document');
 
     try {
@@ -47,7 +49,11 @@ export default class IndexDocumentUseCase
         objectKey,
       });
 
-      await this.es.index({ ...metadata, filename });
+      await this.es.index({
+        ...metadata,
+        filename,
+        uploadedDate: uploadedDate.toISOString()
+      });
     } catch (err) {
       this.logger.error(err).log('indexing failed');
       throw new UnknownDocumentError(documentId);
