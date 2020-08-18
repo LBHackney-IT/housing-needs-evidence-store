@@ -42,6 +42,7 @@ const createHandler: (container: Container) => S3Handler = ({
             documentId: getDocumentIdFromKey(key),
             filename: getFilenameFromKey(key),
             objectKey: decodeURI(key),
+            uploadedDate: new Date(Date.now()),
           });
           logger.log('successfully indexed');
         } catch (err) {

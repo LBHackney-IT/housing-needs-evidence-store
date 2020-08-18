@@ -4,11 +4,14 @@ import { ElasticsearchGateway } from '../gateways';
 import { NoOpLogger } from '../logging/NoOpLogger';
 
 describe('IndexDocument', () => {
+  const expectedDate = new Date(1597744712808);
+
   const expectedMetadata = {
     documentId: 'tewg61a',
     some: 'key',
     another: 'value',
     filename: 'cat.jpg',
+    uploadedDate: expectedDate.toISOString(),
   };
 
   let usecase: IndexDocument;
@@ -33,6 +36,7 @@ describe('IndexDocument', () => {
         documentId: 'tewg61a',
         filename: 'passport.jpg',
         objectKey: 'tewg61a/passport.jpg',
+        uploadedDate: expectedDate,
       });
 
       expect(getMetadata.execute).toHaveBeenLastCalledWith({
@@ -46,6 +50,7 @@ describe('IndexDocument', () => {
         documentId: 'tewg61a',
         filename: 'cat.jpg',
         objectKey: 'tewg61a/cat.jpg',
+        uploadedDate: expectedDate,
       });
 
       expect(es.index).toHaveBeenCalledWith(expectedMetadata);
@@ -65,6 +70,7 @@ describe('IndexDocument', () => {
           documentId: 'UNKNOWN',
           filename: 'passport.jpg',
           objectKey: 'tewg61a/passport.jpg',
+          uploadedDate: expectedDate,
         })
       ).rejects.toThrow(UnknownDocumentError);
     });
