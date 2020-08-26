@@ -47,6 +47,7 @@ export class S3Gateway {
             ['starts-with', '$key', `${documentId}/`],
             { 'X-Amz-Server-Side-Encryption': 'AES256' },
             ['starts-with', '$X-Amz-Meta-Description', ''],
+            ['starts-with', '$Content-Type', ''],
           ],
         },
         (err, data) => {
@@ -79,27 +80,32 @@ export class S3Gateway {
       .mergeContext({ documentId })
       .log('[s3] removing all objects associated with id');
 
-    const listing = await this.client.listObjects({
-      Bucket: this.bucketName,
-      Prefix: `${documentId}/`,
-      MaxKeys: 2, // safeguard against bad prefixes
-    }).promise();
+    const listing = await this.client
+      .listObjects({
+        Bucket: this.bucketName,
+        Prefix: `${documentId}/`,
+        MaxKeys: 2, // safeguard against bad prefixes
+      })
+      .promise();
 
     this.logger
       .mergeContext({
         bucketPrefix: listing.Prefix,
         matchesFoundInBucket: (listing.Contents || []).length,
-      }).log('[s3] found objects in bucket with prefix');
+      })
+      .log('[s3] found objects in bucket with prefix');
 
-    const keys = listing.Contents.map(object => object.Key);
+    const keys = listing.Contents.map((object) => object.Key);
 
     if (keys.length > 0) {
-      await this.client.deleteObjects({
-        Bucket: this.bucketName,
-        Delete: {
-          Objects: keys.map(key => ({ Key: key }))
-        }
-      }).promise();
+      await this.client
+        .deleteObjects({
+          Bucket: this.bucketName,
+          Delete: {
+            Objects: keys.map((key) => ({ Key: key })),
+          },
+        })
+        .promise();
     }
 
     this.logger.log('[s3] deleted objects in bucket');
