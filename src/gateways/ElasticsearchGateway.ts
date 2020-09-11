@@ -148,7 +148,7 @@ export class ElasticsearchGateway {
       .mergeContext({ esSearchResult: documentHits })
       .log('[elasticsearch] find documents complete');
 
-    return documentHits.map((doc) => {
+    const unfilteredHits = documentHits.map((doc) => {
       return {
         documentId: doc._id,
         index: doc._index,
@@ -156,5 +156,24 @@ export class ElasticsearchGateway {
         score: doc._score,
       };
     });
+
+    const checkMatch = (a, b) => {
+      if (!Array.isArray(a)) a = [a];
+      if (!Array.isArray(b)) b = [b];
+
+      let intersection = a.filter((x) => b.includes(x));
+
+      return intersection.length > 0;
+    };
+    const filteredHits = unfilteredHits.filter((doc) => {
+      let match = false;
+      Object.entries(metadata).map(([key, value]) => {
+        if (doc.metadata[key] && checkMatch(value, doc.metadata[key])) {
+          match = true;
+        }
+      });
+      return match;
+    });
+    return filteredHits;
   }
 }

@@ -157,29 +157,9 @@ describe('ElasticsearchGateway', () => {
         },
       };
 
-      const expectedResponse = [
-        {
-          documentId: '1',
-          index: 'documents',
-          score: 0.5,
-          metadata: {
-            name: '123',
-          },
-        },
-        {
-          documentId: '2',
-          index: 'documents',
-          score: 0.9,
-          metadata: {
-            name: 'abc',
-          },
-        },
-      ];
-
-      const result = await gateway.findDocuments({ metadata });
+      await gateway.findDocuments({ metadata });
 
       expect(client.search).toHaveBeenCalledWith(expectedRequest);
-      expect(result).toStrictEqual(expectedResponse);
     });
 
     it('flattens metadata arrays into multiple match terms', async () => {
@@ -220,6 +200,21 @@ describe('ElasticsearchGateway', () => {
       });
 
       expect(client.search).toHaveBeenCalledWith(expectedRequest);
+    });
+
+    it('filters out bad matches', async () => {
+      const result = await gateway.findDocuments({
+        metadata: { name: '123' },
+      });
+
+      expect(result).toEqual([
+        {
+          documentId: '1',
+          index: 'documents',
+          metadata: { name: '123' },
+          score: 0.5,
+        },
+      ]);
     });
 
     describe('when there is an error', () => {
