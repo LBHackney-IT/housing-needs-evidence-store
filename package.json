@@ -29,7 +29,7 @@
     "husky": "^4.2.5",
     "jest": "^26.1.0",
     "lint-staged": "^10.2.10",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^3.1.1",
     "nodemon": "^2.0.4",
     "prettier": "^2.0.5",
     "serverless": "^1.73.0",
